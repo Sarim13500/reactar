@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "private": false,
-  "homepage": "https://sarim13500.github.io/sarim13500/reactar/",
+  "homepage": "https://sarim13500.github.io/reactar/",
   "scripts": {
     "serve": "webpack serve --mode development",
     "build": "webpack --mode production",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist -r https://github.com/Sarim13500/reactar.git"
   },
   "keywords": [],
   "author": "",

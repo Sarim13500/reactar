@@ -37,6 +37,8 @@ const ARScene = () => {
       requestAnimationFrame(render);
     }
 
+    //Yanniiiii
+
     render();
 
     return () => {

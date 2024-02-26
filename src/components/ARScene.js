@@ -28,10 +28,15 @@ const ARScene = () => {
       const beta = event.beta; // rotation around x-axis
       const gamma = event.gamma; // rotation around y-axis
 
+      // Convert degrees to radians
+      const alphaRad = (alpha * Math.PI) / 180;
+      const betaRad = (beta * Math.PI) / 180;
+      const gammaRad = (gamma * Math.PI) / 180;
+
       // Rotate the camera based on device orientation
-      camera.rotation.x = THREE.Math.degToRad(beta);
-      camera.rotation.y = THREE.Math.degToRad(gamma);
-      camera.rotation.z = THREE.Math.degToRad(alpha);
+      camera.rotation.x = betaRad;
+      camera.rotation.y = gammaRad;
+      camera.rotation.z = alphaRad;
 
       renderer.render(scene, camera);
     }

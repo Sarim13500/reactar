@@ -2,85 +2,96 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js";
 
-const ARScene = () => {
+function ARScene() {
   const canvasRef = useRef(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, 1.33, 0.1, 10000);
-    const renderer = new THREE.WebGLRenderer({ canvas });
+    const camera = new THREE.PerspectiveCamera(80, 2, 0.1, 50000);
+    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current });
+
+    const geom = new THREE.BoxGeometry(20, 20, 20);
 
     const arjs = new THREEx.LocationBased(scene, camera);
-    const cam = new THREEx.WebcamRenderer(renderer);
 
-    const geom = new THREE.BoxGeometry(200, 200, 200);
-    const mtl = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const box = new THREE.Mesh(geom, mtl);
+    const cam = new THREEx.WebcamRenderer(renderer, videoRef.current);
 
-    arjs.add(box, 0, 0); // Initial position (0, 0)
+    let orientationControls;
 
-    const startGPSTracking = () => {
-      const handlePositionUpdate = (position) => {
-        const { latitude, longitude } = position.coords;
-        arjs.updateLocation(latitude, longitude);
-      };
+    if (isMobile()) {
+      orientationControls = new THREEx.DeviceOrientationControls(camera);
+    }
 
-      const handlePositionError = (error) => {
-        console.error("Error getting geolocation:", error);
-      };
+    let fake = null;
+    let first = true;
 
-      if (navigator.geolocation) {
-        const options = {
-          enableHighAccuracy: true,
-          maximumAge: 0,
-        };
-        const watchId = navigator.geolocation.watchPosition(
-          handlePositionUpdate,
-          handlePositionError,
-          options
-        );
-        return () => {
-          navigator.geolocation.clearWatch(watchId);
-        };
-      } else {
-        console.error("Geolocation is not supported by this browser.");
+    arjs.on("gpsupdate", (pos) => {
+      if (first) {
+        setupObjects(pos.coords.longitude, pos.coords.latitude);
+        first = false;
       }
-    };
+    });
 
-    const cleanupGPSTracking = startGPSTracking();
+    arjs.on("gpserror", (code) => {
+      alert(`GPS error: code ${code}`);
+    });
 
-    function render() {
-      if (
-        canvas.width != canvas.clientWidth ||
-        canvas.height != canvas.clientHeight
-      ) {
-        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
-        const aspect = canvas.clientWidth / canvas.clientHeight;
-        camera.aspect = aspect;
-        camera.updateProjectionMatrix();
-      }
+    if (fake) {
+      arjs.fakeGps(fake.lon, fake.lat);
+    } else {
+      arjs.startGps();
+    }
 
+    function isMobile() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    }
+
+    function render(time) {
+      resizeUpdate();
+      if (orientationControls) orientationControls.update();
       cam.update();
       renderer.render(scene, camera);
       requestAnimationFrame(render);
     }
 
-    render();
+    function resizeUpdate() {
+      const canvas = renderer.domElement;
+      const width = canvas.clientWidth,
+        height = canvas.clientHeight;
+      if (width !== canvas.width || height !== canvas.height) {
+        renderer.setSize(width, height, false);
+      }
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+    }
+
+    function setupObjects(longitude, latitude) {
+      const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const material2 = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const material3 = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+      const material4 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      arjs.add(new THREE.Mesh(geom, material), longitude, latitude + 0.001); // slightly north
+      arjs.add(new THREE.Mesh(geom, material2), longitude, latitude - 0.001); // slightly south
+      arjs.add(new THREE.Mesh(geom, material3), longitude - 0.001, latitude); // slightly west
+      arjs.add(new THREE.Mesh(geom, material4), longitude + 0.001, latitude); // slightly east
+    }
+
+    requestAnimationFrame(render);
 
     return () => {
-      cleanupGPSTracking();
-      // Clean up code here (if needed)
+      // Clean up event listeners or any resources here if needed
     };
-  }, []);
+  }, []); // Empty dependency array ensures the effect runs only once after initial render
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ backgroundColor: "black", width: "100%", height: "100%" }}
-    />
+    <div>
+      <canvas ref={canvasRef} id="canvas1"></canvas>
+      <video ref={videoRef} id="video1" autoPlay playsInline></video>
+    </div>
   );
-};
+}
 
 export default ARScene;

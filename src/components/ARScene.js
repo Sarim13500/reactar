@@ -18,9 +18,15 @@ const ARScene = () => {
     const geom = new THREE.BoxGeometry(200, 200, 200);
     const mtl = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const box = new THREE.Mesh(geom, mtl);
-    arjs.add(box, -0.72, 51.051);
 
-    arjs.fakeGps(-0.72, 51.02);
+    // Create the device orientation tracker
+    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
+      camera
+    );
+
+    arjs.add(box, 10.759166, 59.908562);
+
+    arjs.startGps();
 
     function render() {
       if (
@@ -32,6 +38,10 @@ const ARScene = () => {
         camera.aspect = aspect;
         camera.updateProjectionMatrix();
       }
+
+      // Update the scene using the latest sensor readings
+      deviceOrientationControls.update();
+
       cam.update();
       renderer.render(scene, camera);
       requestAnimationFrame(render);

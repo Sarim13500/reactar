@@ -12,69 +12,65 @@ const ARScene = () => {
     const camera = new THREE.PerspectiveCamera(60, 1.33, 0.1, 10000);
     const renderer = new THREE.WebGLRenderer({ canvas });
 
-    const arToolkitSource = new THREEx.ArToolkitSource({
-      sourceType: "webcam",
-    });
+    const arjs = new THREEx.LocationBased(scene, camera);
+    const cam = new THREEx.WebcamRenderer(renderer);
 
-    const onResize = () => {
-      arToolkitSource.onResizeElement();
-      arToolkitSource.copyElementSizeTo(renderer.domElement);
-      if (arToolkitContext.arController !== null) {
-        arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
+    const geom = new THREE.BoxGeometry(200, 200, 200);
+    const mtl = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const box = new THREE.Mesh(geom, mtl);
+
+    arjs.add(box, 0, 0); // Initial position (0, 0)
+
+    const startGPSTracking = () => {
+      const handlePositionUpdate = (position) => {
+        const { latitude, longitude } = position.coords;
+        arjs.updateLocation(latitude, longitude);
+      };
+
+      const handlePositionError = (error) => {
+        console.error("Error getting geolocation:", error);
+      };
+
+      if (navigator.geolocation) {
+        const options = {
+          enableHighAccuracy: true,
+          maximumAge: 0,
+        };
+        const watchId = navigator.geolocation.watchPosition(
+          handlePositionUpdate,
+          handlePositionError,
+          options
+        );
+        return () => {
+          navigator.geolocation.clearWatch(watchId);
+        };
+      } else {
+        console.error("Geolocation is not supported by this browser.");
       }
     };
 
-    arToolkitSource.init(() => {
-      onResize();
-    });
+    const cleanupGPSTracking = startGPSTracking();
 
-    window.addEventListener("resize", () => {
-      onResize();
-    });
-
-    const arToolkitContext = new THREEx.ArToolkitContext({
-      cameraParametersUrl: "data/camera_para.dat",
-      detectionMode: "mono",
-    });
-
-    arToolkitContext.init(() => {
-      camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
-    });
-
-    const markerRoot = new THREE.Group();
-    scene.add(markerRoot);
-
-    const markerControls = new THREEx.ArMarkerControls(
-      arToolkitContext,
-      markerRoot,
-      {
-        type: "pattern",
-        patternUrl: "data/hiro.patt",
+    function render() {
+      if (
+        canvas.width != canvas.clientWidth ||
+        canvas.height != canvas.clientHeight
+      ) {
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+        const aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.aspect = aspect;
+        camera.updateProjectionMatrix();
       }
-    );
 
-    const loader = new THREE.FontLoader();
-    loader.load("fonts/helvetiker_regular.typeface.json", (font) => {
-      const textGeo = new THREE.TextGeometry("Hello, AR!", {
-        font: font,
-        size: 0.1,
-        height: 0.01,
-      });
-      const textMat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      const textMesh = new THREE.Mesh(textGeo, textMat);
-      textMesh.position.set(0, 0.05, 0);
-      textMesh.rotation.x = -Math.PI / 2;
-      markerRoot.add(textMesh);
-    });
-
-    const animate = () => {
+      cam.update();
       renderer.render(scene, camera);
-      requestAnimationFrame(animate);
-    };
+      requestAnimationFrame(render);
+    }
 
-    animate();
+    render();
 
     return () => {
+      cleanupGPSTracking();
       // Clean up code here (if needed)
     };
   }, []);

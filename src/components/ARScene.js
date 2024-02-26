@@ -20,10 +20,38 @@ const ARScene = () => {
     const box = new THREE.Mesh(geom, mtl);
 
     arjs.add(box, 10.759166, 59.908562);
-    arjs.startGps();
+
+    // Alternative for starting GPS tracking
+    const startGPSTracking = () => {
+      const handlePositionUpdate = (position) => {
+        const { latitude, longitude } = position.coords;
+        arjs.updateLocation(latitude, longitude);
+      };
+
+      const handlePositionError = (error) => {
+        console.error("Error getting geolocation:", error);
+      };
+
+      if (navigator.geolocation) {
+        const options = {
+          enableHighAccuracy: true,
+          maximumAge: 0,
+        };
+        const watchId = navigator.geolocation.watchPosition(
+          handlePositionUpdate,
+          handlePositionError,
+          options
+        );
+        return () => {
+          navigator.geolocation.clearWatch(watchId);
+        };
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    };
 
     // Function to handle device orientation event
-    function handleOrientation(event) {
+    const handleOrientation = (event) => {
       const alpha = event.alpha; // rotation around z-axis
       const beta = event.beta; // rotation around x-axis
       const gamma = event.gamma; // rotation around y-axis
@@ -39,10 +67,12 @@ const ARScene = () => {
       camera.rotation.z = alphaRad;
 
       renderer.render(scene, camera);
-    }
+    };
 
     // Listen for device orientation events
     window.addEventListener("deviceorientation", handleOrientation);
+
+    const cleanupGPSTracking = startGPSTracking();
 
     function render() {
       if (
@@ -64,6 +94,7 @@ const ARScene = () => {
 
     return () => {
       // Clean up code here (if needed)
+      cleanupGPSTracking();
       window.removeEventListener("deviceorientation", handleOrientation);
     };
   }, []);

@@ -19,14 +19,25 @@ const ARScene = () => {
     const mtl = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const box = new THREE.Mesh(geom, mtl);
 
-    // Create the device orientation tracker
-    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
-      camera
-    );
-
     arjs.add(box, 10.759166, 59.908562);
-
     arjs.startGps();
+
+    // Function to handle device orientation event
+    function handleOrientation(event) {
+      const alpha = event.alpha; // rotation around z-axis
+      const beta = event.beta; // rotation around x-axis
+      const gamma = event.gamma; // rotation around y-axis
+
+      // Rotate the camera based on device orientation
+      camera.rotation.x = THREE.Math.degToRad(beta);
+      camera.rotation.y = THREE.Math.degToRad(gamma);
+      camera.rotation.z = THREE.Math.degToRad(alpha);
+
+      renderer.render(scene, camera);
+    }
+
+    // Listen for device orientation events
+    window.addEventListener("deviceorientation", handleOrientation);
 
     function render() {
       if (
@@ -39,21 +50,16 @@ const ARScene = () => {
         camera.updateProjectionMatrix();
       }
 
-      // Update the scene using the latest sensor readings
-      deviceOrientationControls.update();
-
       cam.update();
       renderer.render(scene, camera);
       requestAnimationFrame(render);
     }
 
-    //Yanniiiii
-    //Yan
-
     render();
 
     return () => {
       // Clean up code here (if needed)
+      window.removeEventListener("deviceorientation", handleOrientation);
     };
   }, []);
 

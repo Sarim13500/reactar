@@ -19,9 +19,13 @@ const ARScene = () => {
     const mtl = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const box = new THREE.Mesh(geom, mtl);
 
+    // Create the device orientation tracker
+    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
+      camera
+    );
+
     arjs.add(box, 10.759166, 59.908562);
 
-    // Alternative for starting GPS tracking
     const startGPSTracking = () => {
       const handlePositionUpdate = (position) => {
         const { latitude, longitude } = position.coords;
@@ -50,28 +54,6 @@ const ARScene = () => {
       }
     };
 
-    // Function to handle device orientation event
-    const handleOrientation = (event) => {
-      const alpha = event.alpha; // rotation around z-axis
-      const beta = event.beta; // rotation around x-axis
-      const gamma = event.gamma; // rotation around y-axis
-
-      // Convert degrees to radians
-      const alphaRad = (alpha * Math.PI) / 180;
-      const betaRad = (beta * Math.PI) / 180;
-      const gammaRad = (gamma * Math.PI) / 180;
-
-      // Rotate the camera based on device orientation
-      camera.rotation.x = betaRad;
-      camera.rotation.y = gammaRad;
-      camera.rotation.z = alphaRad;
-
-      renderer.render(scene, camera);
-    };
-
-    // Listen for device orientation events
-    window.addEventListener("deviceorientation", handleOrientation);
-
     const cleanupGPSTracking = startGPSTracking();
 
     function render() {
@@ -85,17 +67,22 @@ const ARScene = () => {
         camera.updateProjectionMatrix();
       }
 
+      // Update the scene using the latest sensor readings
+      deviceOrientationControls.update();
+
       cam.update();
       renderer.render(scene, camera);
       requestAnimationFrame(render);
     }
 
+    //Yanniiiii
+    //Yan
+
     render();
 
     return () => {
-      // Clean up code here (if needed)
       cleanupGPSTracking();
-      window.removeEventListener("deviceorientation", handleOrientation);
+      // Clean up code here (if needed)
     };
   }, []);
 

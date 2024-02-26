@@ -4,7 +4,6 @@ import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only
 
 function ARScene() {
   const canvasRef = useRef(null);
-  const videoRef = useRef(null);
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -15,7 +14,7 @@ function ARScene() {
 
     const arjs = new THREEx.LocationBased(scene, camera);
 
-    const cam = new THREEx.WebcamRenderer(renderer, videoRef.current);
+    const cam = new THREEx.WebcamRenderer(renderer);
 
     let orientationControls;
 
@@ -89,7 +88,6 @@ function ARScene() {
   return (
     <div>
       <canvas ref={canvasRef} id="canvas1"></canvas>
-      <video ref={videoRef} id="video1" autoPlay playsInline></video>
     </div>
   );
 }

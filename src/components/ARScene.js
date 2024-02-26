@@ -24,7 +24,8 @@ const ARScene = () => {
       camera
     );
 
-    arjs.add(box, 10.759166, 59.908562);
+    // Add the box to the scene
+    scene.add(box);
 
     const startGPSTracking = () => {
       const handlePositionUpdate = (position) => {
@@ -74,9 +75,6 @@ const ARScene = () => {
       renderer.render(scene, camera);
       requestAnimationFrame(render);
     }
-
-    //Yanniiiii
-    //Yan
 
     render();
 

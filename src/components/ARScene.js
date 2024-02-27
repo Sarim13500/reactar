@@ -23,13 +23,9 @@ const ARScene = () => {
     function handleDeviceOrientation(event) {
       const { beta, gamma } = event;
 
-      // Convert degrees to radians
-      const betaRad = THREE.MathUtils.degToRad(beta);
-      const gammaRad = THREE.MathUtils.degToRad(gamma);
-
       // Adjust camera rotation based on device orientation
-      camera.rotation.x = betaRad;
-      camera.rotation.y = gammaRad;
+      camera.rotation.x = beta;
+      camera.rotation.y = gamma;
     }
 
     // Add event listener for device orientation changes

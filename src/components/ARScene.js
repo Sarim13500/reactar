@@ -7,78 +7,114 @@ const ARScene = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, 1.33, 0.1, 10000);
+    const camera = new THREE.PerspectiveCamera(80, 2, 0.1, 50000);
     const renderer = new THREE.WebGLRenderer({ canvas });
 
+    const geom = new THREE.BoxGeometry(20, 20, 20);
     const arjs = new THREEx.LocationBased(scene, camera);
     const cam = new THREEx.WebcamRenderer(renderer);
 
-    const geom = new THREE.BoxGeometry(20, 20, 20);
-    const mtl = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const box = new THREE.Mesh(geom, mtl);
+    const mouseStep = THREE.MathUtils.degToRad(5);
 
-    // Define a function to handle device orientation changes
-    function handleDeviceOrientation(event) {
-      const { beta, gamma } = event;
+    let orientationControls;
 
-      // Adjust camera rotation based on device orientation
-      camera.rotation.x = beta;
-      camera.rotation.y = gamma;
+    if (isMobile()) {
+      orientationControls = new THREEx.DeviceOrientationControls(camera);
     }
 
-    // Add event listener for device orientation changes
-    window.addEventListener("deviceorientation", handleDeviceOrientation);
+    let fake = null;
+    let first = true;
 
-    // Make sure to remove the event listener when the component unmounts
-    useEffect(() => {
-      return () => {
-        window.removeEventListener(
-          "deviceorientation",
-          handleDeviceOrientation
-        );
-      };
-    }, []);
+    arjs.on("gpsupdate", (pos) => {
+      if (first) {
+        setupObjects(pos.coords.longitude, pos.coords.latitude);
+        first = false;
+      }
+    });
 
-    arjs.add(box, -0.72, 51.051);
+    arjs.on("gpserror", (code) => {
+      alert(`GPS error: code ${code}`);
+    });
 
-    arjs.startGps();
+    if (fake) {
+      arjs.fakeGps(fake.lon, fake.lat);
+    } else {
+      arjs.startGps();
+    }
 
-    requestAnimationFrame(render);
+    let mousedown = false;
+    let lastX = 0;
+
+    if (!isMobile()) {
+      window.addEventListener("mousedown", (e) => {
+        mousedown = true;
+      });
+
+      window.addEventListener("mouseup", (e) => {
+        mousedown = false;
+      });
+
+      window.addEventListener("mousemove", (e) => {
+        if (!mousedown) return;
+        if (e.clientX < lastX) {
+          camera.rotation.y += mouseStep;
+          if (camera.rotation.y < 0) {
+            camera.rotation.y += 2 * Math.PI;
+          }
+        } else if (e.clientX > lastX) {
+          camera.rotation.y -= mouseStep;
+          if (camera.rotation.y > 2 * Math.PI) {
+            camera.rotation.y -= 2 * Math.PI;
+          }
+        }
+        lastX = e.clientX;
+      });
+    }
+
+    function isMobile() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    }
 
     function render() {
-      if (
-        canvas.width != canvas.clientWidth ||
-        canvas.height != canvas.clientHeight
-      ) {
-        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
-        const aspect = canvas.clientWidth / canvas.clientHeight;
-        camera.aspect = aspect;
-        camera.updateProjectionMatrix();
-      }
-
+      resizeUpdate();
+      if (orientationControls) orientationControls.update();
       cam.update();
       renderer.render(scene, camera);
       requestAnimationFrame(render);
     }
 
-    //Yanniiiii
-    //Yan
+    function resizeUpdate() {
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      if (width !== canvas.width || height !== canvas.height) {
+        renderer.setSize(width, height, false);
+      }
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
 
-    render();
+    function setupObjects(longitude, latitude) {
+      const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const material2 = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const material3 = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+      const material4 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      arjs.add(new THREE.Mesh(geom, material), longitude, latitude + 0.001); // slightly north
+      arjs.add(new THREE.Mesh(geom, material2), longitude, latitude - 0.001); // slightly south
+      arjs.add(new THREE.Mesh(geom, material3), longitude - 0.001, latitude); // slightly west
+      arjs.add(new THREE.Mesh(geom, material4), longitude + 0.001, latitude); // slightly east
+    }
+
+    requestAnimationFrame(render);
 
     return () => {
-      // Clean up code here (if needed)
+      // Cleanup code
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{ backgroundColor: "black", width: "100%", height: "100%" }}
-    />
-  );
+  return <canvas ref={canvasRef} />;
 };
 
 export default ARScene;

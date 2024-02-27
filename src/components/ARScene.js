@@ -23,9 +23,11 @@ const ARScene = () => {
       camera
     );
 
-    arjs.add(box, -0.72, 51.051);
+    arjs.add(box, 10.758835, 59.908646);
 
     arjs.startGps();
+
+    requestAnimationFrame(render);
 
     function render() {
       if (

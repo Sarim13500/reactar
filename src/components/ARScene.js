@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js";
 
+//Twentyyeightttt
+
 const ARScene = () => {
   const canvasRef = useRef(null);
 

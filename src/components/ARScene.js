@@ -19,10 +19,31 @@ const ARScene = () => {
     const mtl = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const box = new THREE.Mesh(geom, mtl);
 
-    // Create the device orientation tracker
-    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
-      camera
-    );
+    // Define a function to handle device orientation changes
+    function handleDeviceOrientation(event) {
+      const { beta, gamma } = event;
+
+      // Convert degrees to radians
+      const betaRad = THREE.MathUtils.degToRad(beta);
+      const gammaRad = THREE.MathUtils.degToRad(gamma);
+
+      // Adjust camera rotation based on device orientation
+      camera.rotation.x = betaRad;
+      camera.rotation.y = gammaRad;
+    }
+
+    // Add event listener for device orientation changes
+    window.addEventListener("deviceorientation", handleDeviceOrientation);
+
+    // Make sure to remove the event listener when the component unmounts
+    useEffect(() => {
+      return () => {
+        window.removeEventListener(
+          "deviceorientation",
+          handleDeviceOrientation
+        );
+      };
+    }, []);
 
     arjs.add(box, -0.72, 51.051);
 
@@ -40,9 +61,6 @@ const ARScene = () => {
         camera.aspect = aspect;
         camera.updateProjectionMatrix();
       }
-
-      // Update the scene using the latest sensor readings
-      deviceOrientationControls.update();
 
       cam.update();
       renderer.render(scene, camera);

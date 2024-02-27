@@ -18,9 +18,15 @@ const ARScene = () => {
     const geom = new THREE.BoxGeometry(200, 200, 200);
     const mtl = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const box = new THREE.Mesh(geom, mtl);
-    arjs.add(box, -0.72, 51.051);
 
-    arjs.fakeGps(-0.72, 51.02);
+    // Position the object at a specific latitude and longitude
+    const latitude = 59.908542; // Replace with your desired latitude
+    const longitude = 10.759130; // Replace with your desired longitude
+    arjs.add(box, latitude, longitude);
+
+    // This function call fakes the GPS position, useful for testing
+    // Comment this line if you want to use the real GPS position
+    //arjs.fakeGps(latitude, longitude);
 
     function render() {
       if (
@@ -36,9 +42,6 @@ const ARScene = () => {
       renderer.render(scene, camera);
       requestAnimationFrame(render);
     }
-
-    //Yanniiiii
-    //Yan
 
     render();
 

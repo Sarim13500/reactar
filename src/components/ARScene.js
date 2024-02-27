@@ -2,94 +2,69 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js";
 
-function ARScene() {
+const ARScene = () => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(80, 2, 0.1, 50000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current });
+    const canvas = canvasRef.current;
 
-    const geom = new THREE.BoxGeometry(20, 20, 20);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, 1.33, 0.1, 10000);
+    const renderer = new THREE.WebGLRenderer({ canvas });
 
     const arjs = new THREEx.LocationBased(scene, camera);
-
     const cam = new THREEx.WebcamRenderer(renderer);
 
-    let orientationControls;
+    const geom = new THREE.BoxGeometry(20, 20, 20);
+    const mtl = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const box = new THREE.Mesh(geom, mtl);
 
-    if (isMobile()) {
-      orientationControls = new THREEx.DeviceOrientationControls(camera);
-    }
+    // Create the device orientation tracker
+    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
+      camera
+    );
 
-    let fake = null;
-    let first = true;
+    arjs.add(box, -0.72, 51.051);
 
-    arjs.on("gpsupdate", (pos) => {
-      if (first) {
-        setupObjects(pos.coords.longitude, pos.coords.latitude);
-        first = false;
+    arjs.startGps();
+
+    requestAnimationFrame(render);
+
+    function render() {
+      if (
+        canvas.width != canvas.clientWidth ||
+        canvas.height != canvas.clientHeight
+      ) {
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+        const aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.aspect = aspect;
+        camera.updateProjectionMatrix();
       }
-    });
 
-    arjs.on("gpserror", (code) => {
-      alert(`GPS error: code ${code}`);
-    });
+      // Update the scene using the latest sensor readings
+      deviceOrientationControls.update();
 
-    if (fake) {
-      arjs.fakeGps(fake.lon, fake.lat);
-    } else {
-      arjs.startGps();
-    }
-
-    function isMobile() {
-      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
-    }
-
-    function render(time) {
-      resizeUpdate();
-      if (orientationControls) orientationControls.update();
       cam.update();
       renderer.render(scene, camera);
       requestAnimationFrame(render);
     }
 
-    function resizeUpdate() {
-      const canvas = renderer.domElement;
-      const width = canvas.clientWidth,
-        height = canvas.clientHeight;
-      if (width !== canvas.width || height !== canvas.height) {
-        renderer.setSize(width, height, false);
-      }
-      camera.aspect = canvas.clientWidth / canvas.clientHeight;
-      camera.updateProjectionMatrix();
-    }
+    //Yanniiiii
+    //Yan
 
-    function setupObjects(longitude, latitude) {
-      const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-      const material2 = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-      const material3 = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-      const material4 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      arjs.add(new THREE.Mesh(geom, material), longitude, latitude + 0.001); // slightly north
-      arjs.add(new THREE.Mesh(geom, material2), longitude, latitude - 0.001); // slightly south
-      arjs.add(new THREE.Mesh(geom, material3), longitude - 0.001, latitude); // slightly west
-      arjs.add(new THREE.Mesh(geom, material4), longitude + 0.001, latitude); // slightly east
-    }
-
-    requestAnimationFrame(render);
+    render();
 
     return () => {
-      // Clean up event listeners or any resources here if needed
+      // Clean up code here (if needed)
     };
-  }, []); // Empty dependency array ensures the effect runs only once after initial render
+  }, []);
 
   return (
-    <div>
-      <canvas ref={canvasRef} id="canvas1"></canvas>
-    </div>
+    <canvas
+      ref={canvasRef}
+      style={{ backgroundColor: "black", width: "100%", height: "100%" }}
+    />
   );
-}
+};
 
 export default ARScene;

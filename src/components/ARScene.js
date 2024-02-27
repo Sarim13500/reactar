@@ -20,8 +20,8 @@ const ARScene = () => {
     const box = new THREE.Mesh(geom, mtl);
 
     // Position the object at a specific latitude and longitude
-    const latitude = 59.908542; // Replace with your desired latitude
-    const longitude = 10.759130; // Replace with your desired longitude
+    const latitude = 59.9085362; // Replace with your desired latitude
+    const longitude = 10.7590988; // Replace with your desired longitude
     arjs.add(box, latitude, longitude);
 
     // This function call fakes the GPS position, useful for testing

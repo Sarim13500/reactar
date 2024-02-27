@@ -18,9 +18,14 @@ const ARScene = () => {
     const geom = new THREE.BoxGeometry(20, 20, 20);
     const mtl = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const box = new THREE.Mesh(geom, mtl);
+
+    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
+      camera
+    );
+
     arjs.add(box, -0.72, 51.051);
 
-    arjs.fakeGps(-0.72, 51.05);
+    arjs.startGps();
 
     function render() {
       if (
@@ -32,13 +37,13 @@ const ARScene = () => {
         camera.aspect = aspect;
         camera.updateProjectionMatrix();
       }
+
+      deviceOrientationControls.update();
+
       cam.update();
       renderer.render(scene, camera);
       requestAnimationFrame(render);
     }
-
-    //Yanniiiii
-    //Yan
 
     render();
 

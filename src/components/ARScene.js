@@ -17,7 +17,7 @@ const ARScene = () => {
     const arjs = new THREEx.LocationBased(scene, camera);
     const cam = new THREEx.WebcamRenderer(renderer);
 
-    const geom = new THREE.BoxGeometry(10, 10, 10);
+    const geom = new THREE.BoxGeometry(15, 15, 15);
     const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
     const box = new THREE.Mesh(geom, mtl);
 

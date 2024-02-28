@@ -29,6 +29,7 @@ const ARScene = () => {
     arjs.add(box, 10.758549, 59.908334);
     arjs.add(box, 10.762562, 59.911696);
     arjs.add(box, 10.762472, 59.910473);
+    arjs.add(box, 10.758842, 59.910473);
 
     arjs.startGps();
 

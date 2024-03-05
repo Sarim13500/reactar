@@ -23,12 +23,16 @@ const ARScene = () => {
           console.log(manhole.lat);
 
           // Create a box for each manhole
-          const geom = new THREE.BoxGeometry(10, 10, 10);
+          const geom = new THREE.BoxGeometry(3, 3, 3);
           const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
           const box = new THREE.Mesh(geom, mtl);
 
           // Add the box to the AR scene at the manhole's coordinates
           arjs.add(box, manhole.long, manhole.lat);
+
+          const label = createTextLabel("Kumlokk");
+          label.position.set(manhole.long, manhole.lat, 10);
+          scene.add(label);
         });
       })
       .catch((error) => {

@@ -9,12 +9,7 @@ const ARScene = () => {
   useEffect(() => {
     axios
       .get(
-        "https://cors-anywhere.herokuapp.com/https://augmented-api.azurewebsites.net/manholes/latlong?latitude=59.907809&longitude=10.758035",
-        {
-          headers: {
-            "X-Requested-With": "XMLHttpRequest",
-          },
-        }
+        "https://augmented-api.azurewebsites.net/manholes/latlong?latitude=59.907809&longitude=10.758035"
       )
       .then((response) => {
         // Extracting and logging wkt values

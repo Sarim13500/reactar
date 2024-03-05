@@ -29,10 +29,6 @@ const ARScene = () => {
 
           // Add the box to the AR scene at the manhole's coordinates
           arjs.add(box, manhole.long, manhole.lat);
-
-          const label = createTextLabel("Kumlokk");
-          label.position.set(manhole.long, manhole.lat, 10);
-          scene.add(label);
         });
       })
       .catch((error) => {

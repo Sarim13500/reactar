@@ -7,33 +7,46 @@ const ARScene = () => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    axios
-      .get(
-        "https://augmented-api.azurewebsites.net/manholes/latlong?latitude=59.907809&longitude=10.758035"
-      )
-      .then((response) => {
-        // Extracting and logging wkt values
-        response.data.forEach((manhole) => {
-          console.log(manhole);
-          console.log("Extracting wkt...");
-          console.log(manhole.wkt);
-          console.log("Extracting long lat...");
-          console.log("Extracting long lat...");
-          console.log(manhole.long);
-          console.log(manhole.lat);
+    // Function to handle location updates
+    const handleLocationUpdate = (position) => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
 
-          // Create a box for each manhole
-          const geom = new THREE.BoxGeometry(3, 3, 3);
-          const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
-          const box = new THREE.Mesh(geom, mtl);
+      console.log("Latitude:", latitude);
+      console.log("Longitude:", longitude);
 
-          // Add the box to the AR scene at the manhole's coordinates
-          arjs.add(box, manhole.long, manhole.lat);
+      // Now you can use latitude and longitude in your API call
+      axios
+        .get(
+          `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
+        )
+        .then((response) => {
+          // Extracting and logging wkt values
+          response.data.forEach((manhole) => {
+            console.log(manhole);
+            console.log("Extracting wkt...");
+            console.log(manhole.wkt);
+            console.log("Extracting long lat...");
+            console.log("Extracting long lat...");
+            console.log(manhole.long);
+            console.log(manhole.lat);
+
+            // Create a box for each manhole
+            const geom = new THREE.BoxGeometry(3, 3, 3);
+            const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
+            const box = new THREE.Mesh(geom, mtl);
+
+            // Add the box to the AR scene at the manhole's coordinates
+            arjs.add(box, manhole.long, manhole.lat);
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
         });
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    };
+
+    // Request permission to access location
+    navigator.geolocation.getCurrentPosition(handleLocationUpdate);
 
     const canvas = canvasRef.current;
     const scene = new THREE.Scene();

@@ -36,8 +36,22 @@ const ARScene = () => {
             const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
             const box = new THREE.Mesh(geom, mtl);
 
+            // Position for the text label
+            const textPosition = new THREE.Vector3(
+              manhole.long,
+              manhole.lat,
+              10
+            );
+
             // Add the box to the AR scene at the manhole's coordinates
             arjs.add(box, manhole.long, manhole.lat);
+            const textLabel = document.createElement("div");
+            textLabel.className = "text-label";
+            textLabel.textContent = "BOX";
+            textLabel.style.position = "absolute";
+            textLabel.style.top = `${textPosition.y}px`;
+            textLabel.style.left = `${textPosition.x}px`;
+            document.body.appendChild(textLabel);
           });
         })
         .catch((error) => {

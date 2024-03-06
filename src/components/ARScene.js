@@ -9,7 +9,7 @@ const ARScene = () => {
 
   useEffect(() => {
     const arjs = new THREEx.LocationBased();
-    const geom = new THREE.BoxGeometry(1, 1, 1);
+    const geom = new THREE.BoxGeometry(10, 10, 10);
     const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
 
     arjs.startGps();
@@ -20,6 +20,7 @@ const ARScene = () => {
           const response = await axios.get(
             `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}`
           );
+          console.log("Response data:", response.data);
           response.data.forEach((manhole) => {
             const box = new THREE.Mesh(geom, mtl);
             arjs.add(box, manhole.long, manhole.lat);

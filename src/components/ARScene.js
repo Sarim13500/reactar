@@ -15,6 +15,10 @@ const ARScene = () => {
       console.log("Latitude:", latitude);
       console.log("Longitude:", longitude);
 
+      scene.children.forEach((child) => {
+        scene.remove(child);
+      });
+
       // Now you can use latitude and longitude in your API call
       axios
         .get(

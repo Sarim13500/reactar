@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import axios from "axios";
 import * as THREE from "three";
 import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js";
 
 const ARScene = () => {
   const canvasRef = useRef(null);
-  const [currentPositions, setCurrentPositions] = useState([]);
-  const [previousPositions, setPreviousPositions] = useState([]);
 
   useEffect(() => {
     // Function to handle location updates
@@ -28,45 +26,22 @@ const ARScene = () => {
         )
         .then((response) => {
           // Extracting and logging wkt values
-          const newPositions = response.data.map((manhole) => ({
-            longitude: manhole.long,
-            latitude: manhole.lat,
-          }));
-          console.log(newPositions);
+          response.data.forEach((manhole) => {
+            console.log(manhole);
+            console.log("Extracting wkt...");
+            console.log(manhole.wkt);
+            console.log("Extracting long lat...");
+            console.log(manhole.long);
+            console.log(manhole.lat);
 
-          // Compare current and previous positions
-          const addedPositions = newPositions.filter(
-            (pos) =>
-              !previousPositions.some(
-                (prevPos) =>
-                  prevPos.latitude === pos.latitude &&
-                  prevPos.longitude === pos.longitude
-              )
-          );
-          const removedPositions = previousPositions.filter(
-            (prevPos) =>
-              !newPositions.some(
-                (pos) =>
-                  pos.latitude === prevPos.latitude &&
-                  pos.longitude === prevPos.longitude
-              )
-          );
-
-          // Add new boxes for added positions
-          addedPositions.forEach((pos) => {
+            // Create a box for each manhole
             const geom = new THREE.BoxGeometry(3, 3, 3);
             const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
             const box = new THREE.Mesh(geom, mtl);
-            arjs.add(box, pos.longitude, pos.latitude);
-          });
 
-          // Remove boxes for removed positions
-          removedPositions.forEach((pos) => {
-            // Implement removal logic here
+            // Add the box to the AR scene at the manhole's coordinates
+            arjs.add(box, manhole.long, manhole.lat);
           });
-
-          // Update previous positions
-          setPreviousPositions(newPositions);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -92,8 +67,8 @@ const ARScene = () => {
     // Render function
     function render() {
       if (
-        canvas.width !== canvas.clientWidth ||
-        canvas.height !== canvas.clientHeight
+        canvas.width != canvas.clientWidth ||
+        canvas.height != canvas.clientHeight
       ) {
         renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
         const aspect = canvas.clientWidth / canvas.clientHeight;

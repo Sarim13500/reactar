@@ -25,6 +25,7 @@ const ARScene = () => {
           response.data.forEach((manhole) => {
             console.log(manhole);
             console.log("Extracting wkt...");
+            console.log("Extracting wkt...");
             console.log(manhole.wkt);
             console.log("Extracting long lat...");
             console.log(manhole.long);

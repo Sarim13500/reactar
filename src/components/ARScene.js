@@ -38,7 +38,6 @@ const ARScene = () => {
 
             // Add the box to the AR scene at the manhole's coordinates
             arjs.add(box, manhole.long, manhole.lat);
-            arjs.add("Kum", manhole.long, manhole.lat);
           });
         })
         .catch((error) => {

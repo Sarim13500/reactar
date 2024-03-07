@@ -27,7 +27,6 @@ const ARScene = () => {
             console.log("Extracting wkt...");
             console.log(manhole.wkt);
             console.log("Extracting long lat...");
-            console.log("Extracting long lat...");
             console.log(manhole.long);
             console.log(manhole.lat);
 

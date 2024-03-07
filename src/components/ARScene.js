@@ -44,8 +44,8 @@ const ARScene = () => {
         });
     };
 
-    // Request permission to access location
-    navigator.geolocation.getCurrentPosition(handleLocationUpdate);
+    // Request permission to access location and watch for updates
+    const watchId = navigator.geolocation.watchPosition(handleLocationUpdate);
 
     const canvas = canvasRef.current;
     const scene = new THREE.Scene();
@@ -82,6 +82,7 @@ const ARScene = () => {
 
     return () => {
       // Clean up code here (if needed)
+      navigator.geolocation.clearWatch(watchId); // Stop watching for location updates when unmounting
     };
   }, []);
 

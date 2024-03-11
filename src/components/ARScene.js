@@ -21,13 +21,6 @@ const ARScene = () => {
             `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
           )
           .then((response) => {
-            // Remove existing boxes
-            scene.children.forEach((child) => {
-              if (child instanceof THREE.Mesh) {
-                scene.remove(child);
-              }
-            });
-
             // Extracting and logging wkt values
             response.data.forEach((manhole) => {
               console.log(manhole);
@@ -51,12 +44,20 @@ const ARScene = () => {
           });
       };
 
+      const removeExistingBoxes = () => {
+        scene.children.forEach((child) => {
+          if (child instanceof THREE.Mesh) {
+            scene.remove(child);
+          }
+        });
+      };
+
       // Fetch data initially and then set up timer to fetch data every 10 seconds
       fetchData();
-      const timer = setInterval(fetchData, 10000);
+      const removeBoxes = setInterval(removeExistingBoxes, 10000);
 
       // Clean up timer when component unmounts
-      return () => clearInterval(timer);
+      return () => clearInterval(removeBoxes);
     };
 
     // Request permission to access location and watch for updates

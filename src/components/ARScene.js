@@ -37,6 +37,11 @@ const ARScene = () => {
           box.mesh.visible = true; // Show the box if it's within the boundary
           if (box.label) {
             box.label.visible = true; // Show the label if it exists
+            box.label.position.set(
+              box.mesh.position.x,
+              box.mesh.position.y + 10,
+              box.mesh.position.z
+            );
           }
         }
       });
@@ -68,7 +73,7 @@ const ARScene = () => {
             boxes.push(boxData);
 
             // Create text label
-            const label = createLabel(manhole.id);
+            const label = createLabel(manhole.name);
             label.position.set(manhole.long, 5, manhole.lat); // Position the label above the box
             labels.push(label); // Store the label
             scene.add(label); // Add the label to the scen

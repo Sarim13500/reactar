@@ -24,8 +24,13 @@ const ARScene = () => {
           box.lat,
           box.long
         );
-        if (distance > 30) {
+        /*if (distance > 30) {
           scene.remove(box.mesh);
+        }*/
+        if (distance > 30) {
+          box.mesh.visible = false; // Hide the box if it's outside the boundary
+        } else {
+          box.mesh.visible = true; // Show the box if it's within the boundary
         }
       });
 
@@ -44,7 +49,7 @@ const ARScene = () => {
             console.log(manhole.lat);
 
             const geom = new THREE.BoxGeometry(3, 3, 3);
-            const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
+            const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
             const boxMesh = new THREE.Mesh(geom, mtl);
 
             // Store box's coordinates

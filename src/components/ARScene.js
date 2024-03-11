@@ -7,70 +7,57 @@ const ARScene = () => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    let intervalId; // Variable to hold the interval id
+
+    // Function to handle location updates
     const handleLocationUpdate = (position) => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
 
-      // Now you can use latitude and longitude in your API call
-      const fetchData = () => {
-        console.log("Fetching data...");
-        console.log("Latitude:", latitude);
-        console.log("Longitude:", longitude);
-        axios
-          .get(
-            `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
-          )
-          .then((response) => {
-            // Extracting and logging wkt values
-            response.data.forEach((manhole) => {
-              console.log(manhole);
-              console.log("Extracting wkt...");
-              console.log(manhole.wkt);
-              console.log("Extracting long lat...");
-              console.log(manhole.long);
-              console.log(manhole.lat);
+      console.log("Latitude:", latitude);
+      console.log("Longitude:", longitude);
 
-              // Create a box for each manhole
-              const geom = new THREE.BoxGeometry(3, 3, 3);
-              const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
-              const box = new THREE.Mesh(geom, mtl);
+      // Remove all existing objects from the scene
+      scene.children.forEach((child) => {
+        scene.remove(child);
+      });
 
-              // Add the box to the AR scene at the manhole's coordinates
-              arjs.add(box, manhole.long, manhole.lat);
-            });
-          })
-          .catch((error) => {
-            console.error("Error fetching data:", error);
+      // Fetch new data from the API and add objects to the scene
+      axios
+        .get(
+          `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
+        )
+        .then((response) => {
+          response.data.forEach((manhole) => {
+            console.log(manhole);
+            console.log("Extracting wkt...");
+            console.log(manhole.wkt);
+            console.log("Extracting long lat...");
+            console.log(manhole.long);
+            console.log(manhole.lat);
+
+            const geom = new THREE.BoxGeometry(3, 3, 3);
+            const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
+            const box = new THREE.Mesh(geom, mtl);
+
+            arjs.add(box, manhole.long, manhole.lat);
           });
-      };
-
-      const removeExistingBoxes = () => {
-        console.log("removing boxes...");
-        scene.children.forEach((child) => {
-          if (child instanceof THREE.Mesh) {
-            scene.remove(child);
-          }
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
         });
-      };
-
-      // Fetch data initially and then set up timer to fetch data every 10 seconds
-      fetchData();
-      const removeBoxes = setInterval(removeExistingBoxes, 10000);
-
-      // Clean up timer when component unmounts
-      return () => clearInterval(removeBoxes);
     };
 
-    // Request permission to access location and watch for updates
+    // Start watching for location updates
     const watchId = navigator.geolocation.watchPosition(handleLocationUpdate);
 
+    // Set up the scene, camera, renderer, and AR components
     const canvas = canvasRef.current;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, 1.33, 0.1, 10000);
     const renderer = new THREE.WebGLRenderer({ canvas });
     const arjs = new THREEx.LocationBased(scene, camera);
     const cam = new THREEx.WebcamRenderer(renderer);
-
     const deviceOrientationControls = new THREEx.DeviceOrientationControls(
       camera
     );
@@ -80,8 +67,8 @@ const ARScene = () => {
     // Render function
     function render() {
       if (
-        canvas.width != canvas.clientWidth ||
-        canvas.height != canvas.clientHeight
+        canvas.width !== canvas.clientWidth ||
+        canvas.height !== canvas.clientHeight
       ) {
         renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
         const aspect = canvas.clientWidth / canvas.clientHeight;
@@ -94,12 +81,21 @@ const ARScene = () => {
       requestAnimationFrame(render);
     }
 
-    // Initial render
+    // Start the render loop
     render();
 
+    // Set up the interval to clear objects every 10 seconds
+    intervalId = setInterval(() => {
+      console.log("removing");
+      scene.children.forEach((child) => {
+        scene.remove(child);
+      });
+    }, 10000);
+
+    // Clean up function
     return () => {
-      // Clean up code here (if needed)
-      navigator.geolocation.clearWatch(watchId); // Stop watching for location updates when unmounting
+      clearInterval(intervalId); // Clear the interval when unmounting
+      navigator.geolocation.clearWatch(watchId); // Stop watching for location updates
     };
   }, []);
 

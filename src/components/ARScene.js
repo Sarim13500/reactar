@@ -5,9 +5,9 @@ import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only
 
 const ARScene = () => {
   const canvasRef = useRef(null);
-  const boxesRef = useRef([]); // Ref to store the added boxes
 
   useEffect(() => {
+    // Function to handle location updates
     const handleLocationUpdate = (position) => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
@@ -15,34 +15,32 @@ const ARScene = () => {
       console.log("Latitude:", latitude);
       console.log("Longitude:", longitude);
 
+      scene.children.forEach((child) => {
+        scene.remove(child);
+      });
+
+      // Now you can use latitude and longitude in your API call
       axios
         .get(
           `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
         )
         .then((response) => {
-          const newManholes = response.data;
+          // Extracting and logging wkt values
+          response.data.forEach((manhole) => {
+            console.log(manhole);
+            console.log("Extracting wkt...");
+            console.log(manhole.wkt);
+            console.log("Extracting long lat...");
+            console.log(manhole.long);
+            console.log(manhole.lat);
 
-          // Remove old boxes that are no longer within the new bounding box
-          const oldBoxes = boxesRef.current;
-          oldBoxes.forEach((box) => {
-            if (
-              !newManholes.some((manhole) => manhole.id === box.userData.id)
-            ) {
-              scene.remove(box);
-            }
-          });
-          boxesRef.current = [];
-
-          // Add new boxes for the current manholes
-          newManholes.forEach((manhole) => {
+            // Create a box for each manhole
             const geom = new THREE.BoxGeometry(3, 3, 3);
             const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
             const box = new THREE.Mesh(geom, mtl);
-            box.position.set(manhole.long, manhole.lat, 0); // Set position
 
-            scene.add(box);
-            boxesRef.current.push(box); // Add to boxesRef
-            box.userData.id = manhole.id; // Assign an id for tracking
+            // Add the box to the AR scene at the manhole's coordinates
+            arjs.add(box, manhole.long, manhole.lat);
           });
         })
         .catch((error) => {

@@ -45,6 +45,7 @@ const ARScene = () => {
       };
 
       const removeExistingBoxes = () => {
+        console.log("removing boxes...");
         scene.children.forEach((child) => {
           if (child instanceof THREE.Mesh) {
             scene.remove(child);

@@ -6,6 +6,7 @@ import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only
 const ARScene = () => {
   const canvasRef = useRef(null);
   const boxes = []; // Array to store boxes
+  const labels = []; // Array to store labels
 
   useEffect(() => {
     // Function to handle location updates
@@ -29,8 +30,14 @@ const ARScene = () => {
         }*/
         if (distance > 30) {
           box.mesh.visible = false; // Hide the box if it's outside the boundary
+          if (box.label) {
+            box.label.visible = false; // Hide the label if it exists
+          }
         } else {
           box.mesh.visible = true; // Show the box if it's within the boundary
+          if (box.label) {
+            box.label.visible = true; // Show the label if it exists
+          }
         }
       });
 
@@ -59,6 +66,12 @@ const ARScene = () => {
               long: manhole.long,
             };
             boxes.push(boxData);
+
+            // Create text label
+            const label = createLabel(manhole.id);
+            label.position.set(manhole.long, 5, manhole.lat); // Position the label above the box
+            labels.push(label); // Store the label
+            scene.add(label); // Add the label to the scen
 
             arjs.add(boxMesh, manhole.long, manhole.lat);
           });
@@ -125,6 +138,23 @@ const ARScene = () => {
 
     const d = R * c;
     return d;
+  };
+
+  // Function to create text label
+  const createLabel = (text) => {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    context.font = "Bold 20px Arial";
+    context.fillStyle = "rgba(255,255,255,0.95)";
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+    const texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+
+    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(spriteMaterial);
+    sprite.scale.set(30, 15, 1);
+    return sprite;
   };
 
   return (

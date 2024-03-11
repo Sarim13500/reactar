@@ -5,10 +5,9 @@ import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only
 
 const ARScene = () => {
   const canvasRef = useRef(null);
+  const boxes = []; // Array to store boxes
 
   useEffect(() => {
-    let intervalId; // Variable to hold the interval id
-
     // Function to handle location updates
     const handleLocationUpdate = (position) => {
       const latitude = position.coords.latitude;
@@ -17,9 +16,17 @@ const ARScene = () => {
       console.log("Latitude:", latitude);
       console.log("Longitude:", longitude);
 
-      // Remove all existing objects from the scene
-      scene.children.forEach((child) => {
-        scene.remove(child);
+      // Remove boxes outside the 30-meter boundary
+      boxes.forEach((box) => {
+        const distance = calculateDistance(
+          latitude,
+          longitude,
+          box.lat,
+          box.long
+        );
+        if (distance > 30) {
+          scene.remove(box.mesh);
+        }
       });
 
       // Fetch new data from the API and add objects to the scene
@@ -38,9 +45,17 @@ const ARScene = () => {
 
             const geom = new THREE.BoxGeometry(3, 3, 3);
             const mtl = new THREE.MeshBasicMaterial({ color: 0x8a2be2 });
-            const box = new THREE.Mesh(geom, mtl);
+            const boxMesh = new THREE.Mesh(geom, mtl);
 
-            arjs.add(box, manhole.long, manhole.lat);
+            // Store box's coordinates
+            const boxData = {
+              mesh: boxMesh,
+              lat: manhole.lat,
+              long: manhole.long,
+            };
+            boxes.push(boxData);
+
+            arjs.add(boxMesh, manhole.long, manhole.lat);
           });
         })
         .catch((error) => {
@@ -54,12 +69,7 @@ const ARScene = () => {
     // Set up the scene, camera, renderer, and AR components
     const canvas = canvasRef.current;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      60,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      10000
-    );
+    const camera = new THREE.PerspectiveCamera(60, 1.33, 0.1, 10000);
     const renderer = new THREE.WebGLRenderer({ canvas });
     const arjs = new THREEx.LocationBased(scene, camera);
     const cam = new THREEx.WebcamRenderer(renderer);
@@ -89,20 +99,28 @@ const ARScene = () => {
     // Start the render loop
     render();
 
-    // Set up the interval to clear objects every 10 seconds
-    intervalId = setInterval(() => {
-      console.log("removing");
-      scene.children.forEach((child) => {
-        scene.remove(child);
-      });
-    }, 10000);
-
     // Clean up function
     return () => {
-      clearInterval(intervalId); // Clear the interval when unmounting
       navigator.geolocation.clearWatch(watchId); // Stop watching for location updates
     };
   }, []);
+
+  // Function to calculate distance between two coordinates
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // Earth radius in meters
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const d = R * c;
+    return d;
+  };
 
   return (
     <canvas

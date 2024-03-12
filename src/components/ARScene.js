@@ -25,9 +25,6 @@ const ARScene = () => {
           box.lat,
           box.long
         );
-        /*if (distance > 30) {
-          scene.remove(box.mesh);
-        }*/
         if (distance > 30) {
           box.mesh.visible = false; // Hide the box if it's outside the boundary
           if (box.label) {
@@ -37,9 +34,10 @@ const ARScene = () => {
           box.mesh.visible = true; // Show the box if it's within the boundary
           if (box.label) {
             box.label.visible = true; // Show the label if it exists
+            // Adjust label position above the box
             box.label.position.set(
               box.mesh.position.x,
-              box.mesh.position.y + 10,
+              box.mesh.position.y + 10, // Adjust this offset as needed
               box.mesh.position.z
             );
           }
@@ -76,7 +74,10 @@ const ARScene = () => {
             const label = createLabel(manhole.name);
             label.position.set(manhole.long, 5, manhole.lat); // Position the label above the box
             labels.push(label); // Store the label
-            scene.add(label); // Add the label to the scen
+            scene.add(label); // Add the label to the scene
+
+            // Attach label to the box
+            boxData.label = label;
 
             arjs.add(boxMesh, manhole.long, manhole.lat);
           });
@@ -148,6 +149,8 @@ const ARScene = () => {
   // Function to create text label
   const createLabel = (text) => {
     const canvas = document.createElement("canvas");
+    canvas.width = 128; // Set the width of the canvas
+    canvas.height = 64; // Set the height of the canvas
     const context = canvas.getContext("2d");
     context.font = "Bold 20px Arial";
     context.fillStyle = "rgba(255,255,255,0.95)";

@@ -93,7 +93,12 @@ const ARScene = () => {
     // Set up the scene, camera, renderer, and AR components
     const canvas = canvasRef.current;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, 1.33, 0.1, 10000);
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      10000
+    );
     const renderer = new THREE.WebGLRenderer({ canvas });
     const arjs = new THREEx.LocationBased(scene, camera);
     const cam = new THREEx.WebcamRenderer(renderer);
@@ -168,7 +173,7 @@ const ARScene = () => {
   return (
     <canvas
       ref={canvasRef}
-      style={{ backgroundColor: "black", width: "100%", height: "100%" }}
+      style={{ backgroundColor: "black", width: "100vw", height: "100vh" }}
     />
   );
 };

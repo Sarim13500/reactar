@@ -37,7 +37,7 @@ const ARScene = () => {
             // Adjust label position above the box
             box.label.position.set(
               box.mesh.position.x,
-              box.mesh.position.y + 5,
+              box.mesh.position.y + 5, // Adjust this offset as needed
               box.mesh.position.z
             );
           }
@@ -70,21 +70,8 @@ const ARScene = () => {
             };
             boxes.push(boxData);
 
-            // Calculate distance between current location and manhole
-            const distanceToManhole = calculateDistance(
-              latitude,
-              longitude,
-              manhole.lat,
-              manhole.long
-            );
-
-            // Create label text including distance
-            const labelText = `${
-              manhole.name
-            }\nDistance: ${distanceToManhole.toFixed(2)} meters`;
-
             // Create text label
-            const label = createLabel(labelText);
+            const label = createLabel(manhole.name);
             label.position.set(manhole.long, 5, manhole.lat); // Position the label above the box
             labels.push(label); // Store the label
             scene.add(label); // Add the label to the scene
@@ -167,10 +154,11 @@ const ARScene = () => {
     const context = canvas.getContext("2d");
     context.font = "Bold 20px Arial";
     context.fillStyle = "rgba(255,255,255,0.95)";
-    context.textAlign = "center";
     context.fillText(text, canvas.width / 2, canvas.height / 2);
 
-    const texture = new THREE.CanvasTexture(canvas);
+    const texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+
     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
     const sprite = new THREE.Sprite(spriteMaterial);
     sprite.scale.set(30, 15, 1);

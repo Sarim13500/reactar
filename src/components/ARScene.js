@@ -37,7 +37,7 @@ const ARScene = () => {
             // Adjust label position above the box
             box.label.position.set(
               box.mesh.position.x,
-              box.mesh.position.y + 5, // Adjust this offset as needed
+              box.mesh.position.y + 2, // Adjust this offset as needed
               box.mesh.position.z
             );
           }

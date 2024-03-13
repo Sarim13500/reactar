@@ -72,7 +72,7 @@ const ARScene = () => {
 
             // Create text label
             const label = createLabel(manhole.name);
-            label.position.set(manhole.long, 5, manhole.lat); // Position the label above the box
+            label.position.set(manhole.long, 2, manhole.lat); // Position the label above the box
             labels.push(label); // Store the label
             scene.add(label); // Add the label to the scene
 

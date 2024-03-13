@@ -58,7 +58,7 @@ const ARScene = () => {
             console.log(manhole.long);
             console.log(manhole.lat);
 
-            const geom = new THREE.BoxGeometry(3, 3, 3);
+            const geom = new THREE.BoxGeometry(1, 1, 1);
             const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
             const boxMesh = new THREE.Mesh(geom, mtl);
 
@@ -157,7 +157,7 @@ const ARScene = () => {
     canvas.width = 128; // Set the width of the canvas
     canvas.height = 64; // Set the height of the canvas
     const context = canvas.getContext("2d");
-    context.font = "Bold 20px Arial";
+    context.font = "Bold 10px Arial";
     context.fillStyle = "rgba(255,255,255,0.95)";
     context.fillText(text, canvas.width / 2, canvas.height / 2);
 

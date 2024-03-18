@@ -34,6 +34,12 @@ const ARScene = () => {
           box.mesh.visible = true; // Show the box if it's within the boundary
           if (box.label) {
             box.label.visible = true; // Show the label if it exists
+            // Adjust label position above the box
+            box.label.position.set(
+              box.mesh.position.x,
+              box.mesh.position.y + 2, // Adjust this offset as needed
+              box.mesh.position.z
+            );
           }
         }
       });

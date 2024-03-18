@@ -94,7 +94,7 @@ const ARScene = () => {
     const canvas = canvasRef.current;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      50,
+      100,
       window.innerWidth / window.innerHeight,
       0.1,
       10000

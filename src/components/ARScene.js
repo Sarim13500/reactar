@@ -177,8 +177,6 @@ const ARScene = () => {
         backgroundColor: "black",
         width: "100vh", // Viewport height
         height: "100vw", // Viewport width
-        transform: "rotate(90deg)", // Rotate the canvas clockwise by 90 degrees
-        transformOrigin: "top left", // Rotate around the top-left corner of the canvas
       }}
     />
   );

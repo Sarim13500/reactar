@@ -173,7 +173,13 @@ const ARScene = () => {
   return (
     <canvas
       ref={canvasRef}
-      style={{ backgroundColor: "black", width: "100vh", height: "100vw" }}
+      style={{
+        backgroundColor: "black",
+        width: "100%",
+        height: "100%",
+        transform: "rotate(-90deg)", // Rotate the canvas counter-clockwise by 90 degrees
+        transformOrigin: "center", // Rotate around the center of the canvas
+      }}
     />
   );
 };

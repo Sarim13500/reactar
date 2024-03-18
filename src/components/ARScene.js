@@ -98,7 +98,7 @@ const ARScene = () => {
       window.innerWidth / window.innerHeight,
       0.1,
       10000
-    );
+    ); // Adjusted for vertical orientation
     const renderer = new THREE.WebGLRenderer({ canvas });
     const arjs = new THREEx.LocationBased(scene, camera);
     const cam = new THREEx.WebcamRenderer(renderer);
@@ -173,13 +173,7 @@ const ARScene = () => {
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        backgroundColor: "black",
-        width: "100vh", // Viewport height
-        height: "100vw", // Viewport width
-        transform: "rotate(90deg)", // Rotate the canvas clockwise by 90 degrees
-        transformOrigin: "top left", // Rotate around the top-left corner of the canvas
-      }}
+      style={{ backgroundColor: "black", width: "100%", height: "100%" }}
     />
   );
 };

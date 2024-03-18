@@ -37,7 +37,7 @@ const ARScene = () => {
             // Adjust label position above the box
             box.label.position.set(
               box.mesh.position.x,
-              box.mesh.position.y + 2, // Adjust this offset as needed
+              box.mesh.position.y + 1, // Adjust this offset as needed
               box.mesh.position.z
             );
           }
@@ -62,6 +62,9 @@ const ARScene = () => {
             const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
             const boxMesh = new THREE.Mesh(geom, mtl);
 
+            // Adjust the Y position of the box to lower it
+            boxMesh.position.set(manhole.long, -0.5, manhole.lat); // Lowered Y position
+
             // Store box's coordinates
             const boxData = {
               mesh: boxMesh,
@@ -72,7 +75,7 @@ const ARScene = () => {
 
             // Create text label
             const label = createLabel(manhole.name);
-            label.position.set(manhole.long, 2, manhole.lat); // Position the label above the box
+            label.position.set(manhole.long, 1, manhole.lat); // Position the label above the box
             labels.push(label); // Store the label
             scene.add(label); // Add the label to the scene
 

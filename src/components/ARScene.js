@@ -173,7 +173,7 @@ const ARScene = () => {
   return (
     <canvas
       ref={canvasRef}
-      style={{ backgroundColor: "black", width: "100%", height: "100%" }}
+      style={{ backgroundColor: "black", width: "100vw", height: "100vh" }}
     />
   );
 };

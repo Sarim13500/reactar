@@ -1,97 +1,88 @@
 import React, { useEffect, useRef } from "react";
 import axios from "axios";
 import * as THREE from "three";
-import { ManholeModel } from "../Manhole";
 import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js";
 
 const ARScene = () => {
   const canvasRef = useRef(null);
-  const boxes = useRef([]); // Bruker useRef for å lagre tilstanden over renderinger
-  const labels = useRef([]); // Bruker useRef for å lagre tilstanden over renderinger
+  const boxes = []; // Array to store boxes
+  const labels = []; // Array to store labels
 
   useEffect(() => {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      160,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      10000
-    );
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current });
-    const arjs = new THREEx.LocationBased(scene, camera);
-    const cam = new THREEx.WebcamRenderer(renderer);
-    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
-      camera
-    );
-
+    // Function to handle location updates
     const handleLocationUpdate = (position) => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
 
-      // Fjerne kummer utenfor 30m radius fra scenen
-      boxes.current.forEach((box) => {
+      console.log("Latitude:", latitude);
+      console.log("Longitude:", longitude);
+
+      // Remove boxes outside the 30-meter boundary
+      boxes.forEach((box) => {
         const distance = calculateDistance(
           latitude,
           longitude,
-          box.manhole.lat,
-          box.manhole.long
+          box.lat,
+          box.long
         );
         if (distance > 30) {
-          scene.remove(box.mesh); // Fjerner box fra scenen
+          box.mesh.visible = false; // Hide the box if it's outside the boundary
           if (box.label) {
-            scene.remove(box.label); // Fjerner label fra scenen
+            box.label.visible = false; // Hide the label if it exists
+          }
+        } else {
+          box.mesh.visible = true; // Show the box if it's within the boundary
+          if (box.label) {
+            box.label.visible = true; // Show the label if it exists
+            // Adjust label position above the box
+            box.label.position.set(
+              box.mesh.position.x,
+              box.mesh.position.y + 1, // Adjust this offset as needed
+              box.mesh.position.z
+            );
           }
         }
       });
 
-      // Fjerne elementene fra arrays som er utenfor 30m
-      boxes.current = boxes.current.filter((box) => {
-        const distance = calculateDistance(
-          latitude,
-          longitude,
-          box.manhole.lat,
-          box.manhole.long
-        );
-        return distance <= 30;
-      });
-
-      labels.current = labels.current.filter((label) =>
-        scene.children.includes(label)
-      ); // Beholder kun labels som fortsatt er i scenen
-
-      // Henter nye data fra API og legger til objekter i scenen
+      // Fetch new data from the API and add objects to the scene
       axios
         .get(
           `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
         )
         .then((response) => {
-          response.data.forEach((manholeData) => {
-            const distance = calculateDistance(
-              latitude,
-              longitude,
-              manholeData.lat,
-              manholeData.long
-            );
-            if (distance <= 30) {
-              // Sjekker at kummen er innenfor 30 meters radius
-              const manhole = new ManholeModel(manholeData);
+          response.data.forEach((manhole) => {
+            console.log(manhole);
+            console.log("Extracting wkt...");
+            console.log(manhole.wkt);
+            console.log("Extracting long lat...");
+            console.log(manhole.long);
+            console.log(manhole.lat);
 
-              // Oppretter mesh for kummen
-              const geom = new THREE.BoxGeometry(1, 1, 1);
-              const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
-              const boxMesh = new THREE.Mesh(geom, mtl);
-              boxes.current.push({
-                mesh: boxMesh,
-                manhole: manhole,
-              });
+            const geom = new THREE.BoxGeometry(1, 1, 1);
+            const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
+            const boxMesh = new THREE.Mesh(geom, mtl);
 
-              // Oppretter tekstetikett
-              const label = createLabel(manhole.name);
-              label.position.set(manhole.long, 2, manhole.lat);
-              labels.current.push(label);
-              scene.add(label);
-              scene.add(boxMesh);
-            }
+            // Adjust the Y position of the box to lower it
+            boxMesh.position.set(manhole.long, -0.5, manhole.lat); // Lowered Y position
+
+            // Store box's coordinates
+            const boxData = {
+              mesh: boxMesh,
+              lat: manhole.lat,
+              long: manhole.long,
+            };
+            boxes.push(boxData);
+
+            // Create text label
+            const label = createLabel(manhole.name);
+
+            labels.push(label); // Store the label
+            scene.add(label); // Add the label to the scene
+
+            // Attach label to the box
+            boxData.label = label;
+
+            arjs.add(boxMesh, manhole.long, manhole.lat);
           });
         })
         .catch((error) => {
@@ -99,24 +90,36 @@ const ARScene = () => {
         });
     };
 
+    // Start watching for location updates
     const watchId = navigator.geolocation.watchPosition(handleLocationUpdate);
 
-    arjs.startGps();
-    render();
+    // Set up the scene, camera, renderer, and AR components
+    const canvas = canvasRef.current;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      50,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      10000
+    );
+    const renderer = new THREE.WebGLRenderer({ canvas });
+    const arjs = new THREEx.LocationBased(scene, camera);
+    const cam = new THREEx.WebcamRenderer(renderer);
+    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
+      camera
+    );
 
-    // Rendringsfunksjon
+    arjs.startGps();
+
+    // Render function
     function render() {
       if (
-        canvasRef.current.width !== canvasRef.current.clientWidth ||
-        canvasRef.current.height !== canvasRef.current.clientHeight
+        canvas.width !== canvas.clientWidth ||
+        canvas.height !== canvas.clientHeight
       ) {
-        renderer.setSize(
-          canvasRef.current.clientWidth,
-          canvasRef.current.clientHeight,
-          false
-        );
-        camera.aspect =
-          canvasRef.current.clientWidth / canvasRef.current.clientHeight;
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+        const aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.aspect = aspect;
         camera.updateProjectionMatrix();
       }
       deviceOrientationControls.update();
@@ -125,14 +128,18 @@ const ARScene = () => {
       requestAnimationFrame(render);
     }
 
+    // Start the render loop
+    render();
+
+    // Clean up function
     return () => {
-      navigator.geolocation.clearWatch(watchId);
+      navigator.geolocation.clearWatch(watchId); // Stop watching for location updates
     };
   }, []);
 
-  // Beregningsfunksjon for avstand
+  // Function to calculate distance between two coordinates
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3;
+    const R = 6371e3; // Earth radius in meters
     const φ1 = (lat1 * Math.PI) / 180;
     const φ2 = (lat2 * Math.PI) / 180;
     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
@@ -143,14 +150,15 @@ const ARScene = () => {
       Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c;
+    const d = R * c;
+    return d;
   };
 
-  // Funksjon for å opprette tekstetikett
+  // Function to create text label
   const createLabel = (text) => {
     const canvas = document.createElement("canvas");
-    canvas.width = 128;
-    canvas.height = 64;
+    canvas.width = 128; // Set the width of the canvas
+    canvas.height = 64; // Set the height of the canvas
     const context = canvas.getContext("2d");
     context.font = "Bold 10px Arial";
     context.fillStyle = "rgba(255,255,255,0.95)";

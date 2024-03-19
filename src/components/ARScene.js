@@ -1,142 +1,148 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import axios from "axios";
 import * as THREE from "three";
 import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js";
-import { ManholeModel } from "../Manhole"; // Adjust the import path as necessary
 
 const ARScene = () => {
   const canvasRef = useRef(null);
-  const boxesRef = useRef([]); // Use useRef to persist boxes across renders
-  const labelsRef = useRef([]); // Use useRef to persist labels across renders
-  const [lastLocation, setLastLocation] = useState({ lat: null, long: null }); // Track the last fetched location
+  const boxes = useRef([]); // Array to store boxes
+  const labels = useRef([]); // Array to store labels
+  const manholesAdded = useRef({}); // Object to track added manholes
 
   useEffect(() => {
-    // Create the scene
-    const scene = new THREE.Scene();
+    // Function to handle location updates
+    const handleLocationUpdate = (position) => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
 
-    // Setup renderer
-    const canvas = canvasRef.current; // Assuming you have a ref to the canvas element
-    const renderer = new THREE.WebGLRenderer({ canvas });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement); // This line is optional if your canvas is already in the DOM
+      console.log("Latitude:", latitude);
+      console.log("Longitude:", longitude);
 
-    // Setup camera
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 5; // Adjust camera position based on your needs
-
-    let lastFetchedLocation = { lat: null, long: null };
-
-    const handleLocationUpdate = async (position) => {
-      const { latitude, longitude } = position.coords;
-
-      // Check if we need to fetch new data based on the user's movement
-      if (
-        !lastFetchedLocation.lat ||
-        calculateDistance(
-          latitude,
-          longitude,
-          lastFetchedLocation.lat,
-          lastFetchedLocation.long
-        ) > 100
-      ) {
-        lastFetchedLocation = { lat: latitude, long: longitude };
-
-        try {
-          const response = await axios.get(
-            `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
-          );
-          const manholeObjects = response.data.map(
-            (data) => new ManholeModel(data)
-          );
-          const nearbyManholes = manholeObjects.filter(
-            (manhole) =>
-              calculateDistance(
-                latitude,
-                longitude,
-                manhole.lat,
-                manhole.long
-              ) <= 30
-          );
-
-          // Clear previous manholes from the scene
-          boxesRef.current.forEach((box) => {
-            scene.remove(box.mesh);
-            if (box.label) scene.remove(box.label);
-          });
-          boxesRef.current = [];
-          labelsRef.current = [];
-
-          nearbyManholes.forEach((manhole) => {
-            const geom = new THREE.BoxGeometry(1, 1, 1);
-            const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
-            const boxMesh = new THREE.Mesh(geom, mtl);
-
-            boxMesh.position.set(manhole.long, -0.5, manhole.lat); // Set the position based on manhole coordinates
-
-            const boxData = {
-              mesh: boxMesh,
-              lat: manhole.lat,
-              long: manhole.long,
-            };
-            boxesRef.current.push(boxData);
-
-            const label = createLabel(manhole.name);
-            labelsRef.current.push(label);
-            scene.add(boxMesh);
-            scene.add(label);
-
-            boxData.label = label;
-            label.position.set(
-              boxMesh.position.x,
-              boxMesh.position.y + 1,
-              boxMesh.position.z
-            );
-          });
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      }
-
-      // Update visibility based on current location
-      boxesRef.current.forEach((box) => {
+      // Remove boxes outside the 30-meter boundary
+      boxes.current.forEach((box) => {
         const distance = calculateDistance(
           latitude,
           longitude,
           box.lat,
           box.long
         );
-        box.mesh.visible = distance <= 30;
-        if (box.label) box.label.visible = distance <= 30;
+        if (distance > 30) {
+          box.mesh.visible = false; // Hide the box if it's outside the boundary
+          if (box.label) {
+            box.label.visible = false; // Hide the label if it exists
+          }
+        } else {
+          box.mesh.visible = true; // Show the box if it's within the boundary
+          if (box.label) {
+            box.label.visible = true; // Show the label if it exists
+            // Adjust label position above the box
+            box.label.position.set(
+              box.mesh.position.x,
+              box.mesh.position.y + 1, // Adjust this offset as needed
+              box.mesh.position.z
+            );
+          }
+        }
       });
+
+      // Fetch new data from the API and add objects to the scene
+      axios
+        .get(
+          `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
+        )
+        .then((response) => {
+          response.data.forEach((manhole) => {
+            // Check if manhole has already been added
+            if (!manholesAdded.current[manhole.id]) {
+              console.log(manhole);
+              console.log("Extracting wkt...");
+              console.log(manhole.wkt);
+              console.log("Extracting long lat...");
+              console.log(manhole.long);
+              console.log(manhole.lat);
+
+              const geom = new THREE.BoxGeometry(1, 1, 1);
+              const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
+              const boxMesh = new THREE.Mesh(geom, mtl);
+
+              // Adjust the Y position of the box to lower it
+              boxMesh.position.set(manhole.long, -0.5, manhole.lat); // Lowered Y position
+
+              // Store box's coordinates
+              const boxData = {
+                mesh: boxMesh,
+                lat: manhole.lat,
+                long: manhole.long,
+              };
+              boxes.current.push(boxData);
+
+              // Mark this manhole as added
+              manholesAdded.current[manhole.id] = true;
+
+              // Create text label
+              const label = createLabel(manhole.name);
+
+              labels.current.push(label); // Store the label
+              scene.add(label); // Add the label to the scene
+
+              // Attach label to the box
+              boxData.label = label;
+
+              arjs.add(boxMesh, manhole.long, manhole.lat);
+            }
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
     };
 
-    const watchId = navigator.geolocation.watchPosition(
-      handleLocationUpdate,
-      (err) => {
-        console.error("Error obtaining location", err);
-      },
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+    // Start watching for location updates
+    const watchId = navigator.geolocation.watchPosition(handleLocationUpdate);
+
+    // Set up the scene, camera, renderer, and AR components
+    const canvas = canvasRef.current;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      50,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      10000
+    );
+    const renderer = new THREE.WebGLRenderer({ canvas });
+    const arjs = new THREEx.LocationBased(scene, camera);
+    const cam = new THREEx.WebcamRenderer(renderer);
+    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
+      camera
     );
 
-    // Animation loop / render loop
-    const animate = () => {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-      // Any animations or updates to objects in your scene
-    };
-    animate(); // Start the animation loop
+    arjs.startGps();
 
+    // Render function
+    function render() {
+      if (
+        canvas.width !== canvas.clientWidth ||
+        canvas.height !== canvas.clientHeight
+      ) {
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+        const aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.aspect = aspect;
+        camera.updateProjectionMatrix();
+      }
+      deviceOrientationControls.update();
+      cam.update();
+      renderer.render(scene, camera);
+      requestAnimationFrame(render);
+    }
+
+    // Start the render loop
+    render();
+
+    // Clean up function
     return () => {
-      navigator.geolocation.clearWatch(watchId); // Stop watching location
-      renderer.dispose(); // Optional: clean up renderer resources
-      // Any other cleanup related to Three.js or AR.js
+      navigator.geolocation.clearWatch(watchId); // Stop watching for location updates
     };
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, []);
 
   // Function to calculate distance between two coordinates
   const calculateDistance = (lat1, lon1, lat2, lon2) => {

@@ -14,9 +14,6 @@ const ARScene = () => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
 
-      console.log(latitude);
-      console.log(longitude);
-
       axios
         .get(
           `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
@@ -24,7 +21,7 @@ const ARScene = () => {
         .then((response) => {
           response.data.forEach((manhole) => {
             // Use manhole.Id as the unique identifier
-            if (!manholes.current.has(manhole.Id)) {
+            if (!manholes.current.has(manhole.id)) {
               // Manhole is not yet tracked, add it
               const geom = new THREE.BoxGeometry(1, 1, 1);
               const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
@@ -35,12 +32,12 @@ const ARScene = () => {
               scene.add(label);
 
               // Store box and label with the manhole.Id
-              manholes.current.set(manhole.Id, { mesh: boxMesh, label: label });
+              manholes.current.set(manhole.id, { mesh: boxMesh, label: label });
 
               arjs.add(boxMesh, manhole.long, manhole.lat);
             } else {
               // Manhole already exists, update visibility if necessary
-              const manholeData = manholes.current.get(manhole.Id);
+              const manholeData = manholes.current.get(manhole.id);
               const distance = calculateDistance(
                 latitude,
                 longitude,

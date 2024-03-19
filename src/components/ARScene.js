@@ -5,8 +5,8 @@ import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only
 
 const ARScene = () => {
   const canvasRef = useRef(null);
-  const boxes = []; // Array to store boxes
-  const labels = []; // Array to store labels
+  // Using a Map object to keep track of manholes by their IDs
+  const manholes = useRef(new Map());
 
   useEffect(() => {
     // Function to handle location updates
@@ -14,84 +14,54 @@ const ARScene = () => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
 
-      console.log("Latitude:", latitude);
-      console.log("Longitude:", longitude);
-
-      // Remove boxes outside the 30-meter boundary
-      boxes.forEach((box) => {
-        const distance = calculateDistance(
-          latitude,
-          longitude,
-          box.lat,
-          box.long
-        );
-        if (distance > 30) {
-          box.mesh.visible = false; // Hide the box if it's outside the boundary
-          if (box.label) {
-            box.label.visible = false; // Hide the label if it exists
-          }
-        } else {
-          box.mesh.visible = true; // Show the box if it's within the boundary
-          if (box.label) {
-            box.label.visible = true; // Show the label if it exists
-            // Adjust label position above the box
-            box.label.position.set(
-              box.mesh.position.x,
-              box.mesh.position.y + 1, // Adjust this offset as needed
-              box.mesh.position.z
-            );
-          }
-        }
-      });
-
-      // Fetch new data from the API and add objects to the scene
       axios
         .get(
           `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
         )
         .then((response) => {
           response.data.forEach((manhole) => {
-            console.log(manhole);
-            console.log("Extracting wkt...");
-            console.log(manhole.wkt);
-            console.log("Extracting long lat...");
-            console.log(manhole.long);
-            console.log(manhole.lat);
+            // Use manhole.Id as the unique identifier
+            if (!manholes.current.has(manhole.Id)) {
+              // Manhole is not yet tracked, add it
+              const geom = new THREE.BoxGeometry(1, 1, 1);
+              const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
+              const boxMesh = new THREE.Mesh(geom, mtl);
+              boxMesh.position.set(manhole.long, -0.5, manhole.lat);
 
-            const geom = new THREE.BoxGeometry(1, 1, 1);
-            const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
-            const boxMesh = new THREE.Mesh(geom, mtl);
+              const label = createLabel(manhole.name);
+              scene.add(label);
 
-            // Adjust the Y position of the box to lower it
-            boxMesh.position.set(manhole.long, -0.5, manhole.lat); // Lowered Y position
+              // Store box and label with the manhole.Id
+              manholes.current.set(manhole.Id, { mesh: boxMesh, label: label });
 
-            // Store box's coordinates
-            const boxData = {
-              mesh: boxMesh,
-              lat: manhole.lat,
-              long: manhole.long,
-            };
-            boxes.push(boxData);
-
-            // Create text label
-            const label = createLabel(manhole.name);
-
-            labels.push(label); // Store the label
-            scene.add(label); // Add the label to the scene
-
-            // Attach label to the box
-            boxData.label = label;
-
-            arjs.add(boxMesh, manhole.long, manhole.lat);
+              arjs.add(boxMesh, manhole.long, manhole.lat);
+            } else {
+              // Manhole already exists, update visibility if necessary
+              const manholeData = manholes.current.get(manhole.Id);
+              const distance = calculateDistance(
+                latitude,
+                longitude,
+                manhole.lat,
+                manhole.long
+              );
+              const isVisible = distance <= 30;
+              manholeData.mesh.visible = isVisible;
+              manholeData.label.visible = isVisible;
+              if (isVisible) {
+                // Update label position if needed
+                manholeData.label.position.set(
+                  manholeData.mesh.position.x,
+                  manholeData.mesh.position.y + 1,
+                  manholeData.mesh.position.z
+                );
+              }
+            }
           });
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
         });
     };
-
-    // Start watching for location updates
-    const watchId = navigator.geolocation.watchPosition(handleLocationUpdate);
 
     // Set up the scene, camera, renderer, and AR components
     const canvas = canvasRef.current;
@@ -130,6 +100,9 @@ const ARScene = () => {
 
     // Start the render loop
     render();
+
+    // Start watching for location updates
+    const watchId = navigator.geolocation.watchPosition(handleLocationUpdate);
 
     // Clean up function
     return () => {

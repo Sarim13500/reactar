@@ -5,141 +5,129 @@ import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only
 
 const ARScene = () => {
   const canvasRef = useRef(null);
-  const boxes = []; // Array to store boxes
-  const labels = []; // Array to store labels
+  const allObjects = useRef([]); // useRef to hold all objects across renders
+  let scene, camera, renderer, arjs;
 
   useEffect(() => {
-    // Function to handle location updates
-    const handleLocationUpdate = (position) => {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-
-      console.log("Latitude:", latitude);
-      console.log("Longitude:", longitude);
-
-      // Remove boxes outside the 30-meter boundary
-      boxes.forEach((box) => {
-        const distance = calculateDistance(
-          latitude,
-          longitude,
-          box.lat,
-          box.long
-        );
-        if (distance > 30) {
-          box.mesh.visible = false; // Hide the box if it's outside the boundary
-          if (box.label) {
-            box.label.visible = false; // Hide the label if it exists
-          }
-        } else {
-          box.mesh.visible = true; // Show the box if it's within the boundary
-          if (box.label) {
-            box.label.visible = true; // Show the label if it exists
-            // Adjust label position above the box
-            box.label.position.set(
-              box.mesh.position.x,
-              box.mesh.position.y + 1, // Adjust this offset as needed
-              box.mesh.position.z
-            );
-          }
-        }
-      });
-
-      // Fetch new data from the API and add objects to the scene
-      axios
-        .get(
-          `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
-        )
-        .then((response) => {
-          response.data.forEach((manhole) => {
-            console.log(manhole);
-            console.log("Extracting wkt...");
-            console.log(manhole.wkt);
-            console.log("Extracting long lat...");
-            console.log(manhole.long);
-            console.log(manhole.lat);
-
-            const geom = new THREE.BoxGeometry(1, 1, 1);
-            const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
-            const boxMesh = new THREE.Mesh(geom, mtl);
-
-            // Adjust the Y position of the box to lower it
-            boxMesh.position.set(manhole.long, -0.5, manhole.lat); // Lowered Y position
-
-            // Store box's coordinates
-            const boxData = {
-              mesh: boxMesh,
-              lat: manhole.lat,
-              long: manhole.long,
-            };
-            boxes.push(boxData);
-
-            // Create text label
-            const label = createLabel(manhole.name);
-
-            labels.push(label); // Store the label
-            scene.add(label); // Add the label to the scene
-
-            // Attach label to the box
-            boxData.label = label;
-
-            arjs.add(boxMesh, manhole.long, manhole.lat);
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-
-    // Start watching for location updates
-    const watchId = navigator.geolocation.watchPosition(handleLocationUpdate);
-
-    // Set up the scene, camera, renderer, and AR components
-    const canvas = canvasRef.current;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
+    // Initialize scene, camera, and renderer
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(
       50,
       window.innerWidth / window.innerHeight,
       0.1,
       10000
     );
-    const renderer = new THREE.WebGLRenderer({ canvas });
-    const arjs = new THREEx.LocationBased(scene, camera);
-    const cam = new THREEx.WebcamRenderer(renderer);
+    renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      canvas: canvasRef.current,
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Initialize AR.js
+    arjs = new THREEx.LocationBased(scene, camera);
+    arjs.startGps();
+
+    // Initialize device orientation controls
     const deviceOrientationControls = new THREEx.DeviceOrientationControls(
       camera
     );
 
-    arjs.startGps();
+    // Start watching for location updates
+    const watchId = navigator.geolocation.watchPosition(
+      handleLocationUpdate,
+      handleError,
+      { enableHighAccuracy: true }
+    );
 
-    // Render function
-    function render() {
-      if (
-        canvas.width !== canvas.clientWidth ||
-        canvas.height !== canvas.clientHeight
-      ) {
-        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
-        const aspect = canvas.clientWidth / canvas.clientHeight;
-        camera.aspect = aspect;
-        camera.updateProjectionMatrix();
-      }
+    // Render loop
+    const render = () => {
       deviceOrientationControls.update();
-      cam.update();
       renderer.render(scene, camera);
       requestAnimationFrame(render);
-    }
-
-    // Start the render loop
+    };
     render();
 
-    // Clean up function
+    // Clean up on component unmount
     return () => {
-      navigator.geolocation.clearWatch(watchId); // Stop watching for location updates
+      navigator.geolocation.clearWatch(watchId);
+      // Additional cleanup here if necessary
     };
   }, []);
 
-  // Function to calculate distance between two coordinates
+  // Handle location updates
+  const handleLocationUpdate = (position) => {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    // Optionally, fetch new data based on the updated location
+    fetchData(latitude, longitude);
+
+    // Filter objects within 30 meters and update visibility
+    allObjects.current.forEach((obj) => {
+      const distance = calculateDistance(
+        latitude,
+        longitude,
+        obj.lat,
+        obj.long
+      );
+      const isVisible = distance <= 30;
+      obj.mesh.visible = isVisible;
+      if (obj.label) {
+        obj.label.visible = isVisible;
+      }
+    });
+  };
+
+  // Error handler for geolocation
+  const handleError = (error) => {
+    console.error("Geolocation error:", error);
+  };
+
+  // Fetch data and create objects
+  const fetchData = (latitude, longitude) => {
+    axios
+      .get(
+        `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
+      )
+      .then((response) => {
+        response.data.forEach((data) => {
+          createObject(data);
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+
+  // Create an object and add it to the scene and allObjects array
+  const createObject = (data) => {
+    // Create mesh for the new object
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(data.long, -0.5, data.lat);
+
+    // Create label for the new object
+    const label = createLabel(data.name);
+    label.position.set(data.long, 0.5, data.lat);
+
+    // Add to scene
+    scene.add(mesh);
+    scene.add(label);
+
+    // Store object info
+    allObjects.current.push({
+      mesh: mesh,
+      label: label,
+      lat: data.lat,
+      long: data.long,
+    });
+  };
+
+  // Calculate distance between two coordinates
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3; // Earth radius in meters
+    const R = 6371e3; // Earth's radius in meters
     const φ1 = (lat1 * Math.PI) / 180;
     const φ2 = (lat2 * Math.PI) / 180;
     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
@@ -150,35 +138,30 @@ const ARScene = () => {
       Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    const d = R * c;
-    return d;
+    return R * c; // Distance in meters
   };
 
-  // Function to create text label
+  // Create a text label
   const createLabel = (text) => {
+    // Your existing label creation code
+    // Placeholder for label creation code
     const canvas = document.createElement("canvas");
-    canvas.width = 128; // Set the width of the canvas
-    canvas.height = 64; // Set the height of the canvas
+    canvas.width = 256; // Example dimensions, adjust as needed
+    canvas.height = 128;
     const context = canvas.getContext("2d");
-    context.font = "Bold 10px Arial";
-    context.fillStyle = "rgba(255,255,255,0.95)";
-    context.fillText(text, canvas.width / 2, canvas.height / 2);
+    context.fillStyle = "#FFFFFF"; // Text color
+    context.font = "24px Arial";
+    context.fillText(text, 50, 50);
 
     const texture = new THREE.Texture(canvas);
     texture.needsUpdate = true;
 
-    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-    const sprite = new THREE.Sprite(spriteMaterial);
-    sprite.scale.set(30, 15, 1);
+    const material = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(material);
     return sprite;
   };
 
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{ backgroundColor: "black", width: "100%", height: "100%" }}
-    />
-  );
+  return <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />;
 };
 
 export default ARScene;

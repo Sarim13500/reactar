@@ -14,6 +14,9 @@ const ARScene = () => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
 
+      console.log(latitude);
+      console.log(longitude);
+
       axios
         .get(
           `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`

@@ -2,35 +2,48 @@ import React, { useEffect, useRef } from "react";
 import axios from "axios";
 import * as THREE from "three";
 import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js";
+import { ManholeModel } from "../Manhole";
 
 const ARScene = () => {
   const canvasRef = useRef(null);
-  const boxes = useRef([]); // Array to store boxes
-  const labels = useRef([]); // Array to store labels
-  const manholesAdded = useRef({}); // Object to track added manholes
+  const boxes = []; // Array to store boxes
+  const labels = []; // Array to store labels
 
   useEffect(() => {
-    // Function to calculate distance between two coordinates
-    const calculateDistance = (lat1, lon1, lat2, lon2) => {
-      const R = 6371e3; // Earth radius in meters
-      const φ1 = (lat1 * Math.PI) / 180;
-      const φ2 = (lat2 * Math.PI) / 180;
-      const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-      const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-
-      const a =
-        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-      const d = R * c;
-      return d;
-    };
-
     // Function to handle location updates
     const handleLocationUpdate = (position) => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
+
+      console.log("Latitude:", latitude);
+      console.log("Longitude:", longitude);
+
+      // Remove boxes outside the 30-meter boundary
+      boxes.forEach((box) => {
+        const distance = calculateDistance(
+          latitude,
+          longitude,
+          box.lat,
+          box.long
+        );
+        if (distance > 30) {
+          box.mesh.visible = false; // Hide the box if it's outside the boundary
+          if (box.label) {
+            box.label.visible = false; // Hide the label if it exists
+          }
+        } else {
+          box.mesh.visible = true; // Show the box if it's within the boundary
+          if (box.label) {
+            box.label.visible = true; // Show the label if it exists
+            // Adjust label position above the box
+            box.label.position.set(
+              box.mesh.position.x,
+              box.mesh.position.y + 1, // Adjust this offset as needed
+              box.mesh.position.z
+            );
+          }
+        }
+      });
 
       // Fetch new data from the API and add objects to the scene
       axios
@@ -38,68 +51,51 @@ const ARScene = () => {
           `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
         )
         .then((response) => {
-          response.data.forEach((manhole) => {
-            // Check if manhole has already been added
-            if (!manholesAdded.current[manhole.id]) {
-              const geom = new THREE.BoxGeometry(1, 1, 1);
-              const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
-              const boxMesh = new THREE.Mesh(geom, mtl);
-
-              // Adjust the Y position of the box to lower it
-              boxMesh.position.set(manhole.long, -0.5, manhole.lat); // Lowered Y position
-
-              // Store box's coordinates
-              const boxData = {
+          const manholeModels = response.data.map(
+            (manhole) =>
+              new ManholeModel({
                 id: manhole.id,
-                mesh: boxMesh,
+                featureTypeId: manhole.featureTypeId,
+                name: manhole.name,
+                subSection: manhole.subSection,
+                county: manhole.county,
+                srid: manhole.srid,
+                wkt: manhole.wkt,
                 lat: manhole.lat,
                 long: manhole.long,
-                label: null, // This will be set later
-              };
-              boxes.current.push(boxData);
+              })
+          );
 
-              // Mark this manhole as added
-              manholesAdded.current[manhole.id] = true;
+          // Now you can use manholeModels, which is an array of ManholeModel instances
+          //console.log(manholeModels);
 
-              // Create text label
-              const label = createLabel(manhole.name);
-              label.position.set(manhole.long, 0.5, manhole.lat); // Adjust label position
+          manholeModels.forEach((manholeModel) => {
+            console.log(manholeModel);
+            const geom = new THREE.BoxGeometry(1, 1, 1);
+            const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
+            const boxMesh = new THREE.Mesh(geom, mtl);
 
-              labels.current.push(label); // Store the label
-              scene.add(label); // Add the label to the scene
+            // Adjust the position of the box based on the manhole's longitude and latitude
+            boxMesh.position.set(manholeModel.long, -0.5, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
 
-              // Attach label to the box
-              boxData.label = label;
+            // Prepare data for rendering
+            const boxData = {
+              mesh: boxMesh,
+              lat: manholeModel.lat,
+              long: manholeModel.long,
+            };
+            boxes.push(boxData);
 
-              scene.add(boxMesh); // Add the box mesh to the scene
-            }
-          });
+            // Create and store text label
+            const label = createLabel(manholeModel.name);
+            labels.push(label); // Store the label
+            scene.add(label); // Add the label to the scene
 
-          // Remove or show boxes based on the new location
-          boxes.current.forEach((box) => {
-            const distance = calculateDistance(
-              latitude,
-              longitude,
-              box.lat,
-              box.long
-            );
-            if (distance > 30) {
-              box.mesh.visible = false; // Hide the box if it's outside the boundary
-              if (box.label) {
-                box.label.visible = false; // Hide the label if it exists
-              }
-            } else {
-              box.mesh.visible = true; // Show the box if it's within the boundary
-              if (box.label) {
-                box.label.visible = true; // Show the label if it exists
-                // Adjust label position above the box
-                box.label.position.set(
-                  box.mesh.position.x,
-                  box.mesh.position.y + 1, // Adjust this offset as needed
-                  box.mesh.position.z
-                );
-              }
-            }
+            // Attach label to the box
+            boxData.label = label;
+
+            // Add boxMesh to the scene (adjust according to your AR library usage)
+            arjs.add(boxMesh, manholeModel.long, manholeModel.lat);
           });
         })
         .catch((error) => {
@@ -107,60 +103,95 @@ const ARScene = () => {
         });
     };
 
-    // Function to create text label
-    const createLabel = (text) => {
-      const canvas = document.createElement("canvas");
-      canvas.width = 128; // Set the width of the canvas
-      canvas.height = 64; // Set the height of the canvas
-      const context = canvas.getContext("2d");
-      context.font = "Bold 10px Arial";
-      context.fillStyle = "rgba(255,255,255,0.95)";
-      context.fillText(text, 50, 50); // Adjust text positioning as needed
+    // Start watching for location updates
+    const watchId = navigator.geolocation.watchPosition(handleLocationUpdate);
 
-      const texture = new THREE.Texture(canvas);
-      texture.needsUpdate = true;
-
-      const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-      const sprite = new THREE.Sprite(spriteMaterial);
-      sprite.scale.set(10, 5, 1); // Adjust sprite size as needed
-      return sprite;
-    };
-
-    // Initialize Three.js scene, camera, and renderer
+    // Set up the scene, camera, renderer, and AR components
+    const canvas = canvasRef.current;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      75,
+      50,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000
+      10000
     );
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    const renderer = new THREE.WebGLRenderer({ canvas });
+    const arjs = new THREEx.LocationBased(scene, camera);
+    const cam = new THREEx.WebcamRenderer(renderer);
+    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
+      camera
+    );
 
-    // Start watching for location updates
-    const watchId = navigator.geolocation.watchPosition(
-      handleLocationUpdate,
-      undefined,
-      {
-        enableHighAccuracy: true,
-      }
-    );
+    arjs.startGps();
 
     // Render function
-    const render = () => {
-      requestAnimationFrame(render);
+    function render() {
+      if (
+        canvas.width !== canvas.clientWidth ||
+        canvas.height !== canvas.clientHeight
+      ) {
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+        const aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.aspect = aspect;
+        camera.updateProjectionMatrix();
+      }
+      deviceOrientationControls.update();
+      cam.update();
       renderer.render(scene, camera);
-    };
+      requestAnimationFrame(render);
+    }
+
+    // Start the render loop
     render();
 
-    // Clean up on component unmount
+    // Clean up function
     return () => {
-      navigator.geolocation.clearWatch(watchId);
+      navigator.geolocation.clearWatch(watchId); // Stop watching for location updates
     };
   }, []);
 
-  return <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />;
+  // Function to calculate distance between two coordinates
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // Earth radius in meters
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const d = R * c;
+    return d;
+  };
+
+  // Function to create text label
+  const createLabel = (text) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 128; // Set the width of the canvas
+    canvas.height = 64; // Set the height of the canvas
+    const context = canvas.getContext("2d");
+    context.font = "Bold 10px Arial";
+    context.fillStyle = "rgba(255,255,255,0.95)";
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+    const texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+
+    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(spriteMaterial);
+    sprite.scale.set(30, 15, 1);
+    return sprite;
+  };
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ backgroundColor: "black", width: "100%", height: "100%" }}
+    />
+  );
 };
 
 export default ARScene;

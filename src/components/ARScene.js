@@ -4,7 +4,7 @@ import * as THREE from "three";
 import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js";
 import { ManholeModel } from "../Manhole";
 
-const ARScene = () => {
+const ARScene = ({ log }) => {
   const canvasRef = useRef(null);
   const boxes = []; // Array to store boxes
   const labels = []; // Array to store labels
@@ -17,6 +17,10 @@ const ARScene = () => {
 
       console.log("Latitude:", latitude);
       console.log("Longitude:", longitude);
+
+      // Use the provided log function instead of console.log
+      log("Latitude: " + latitude);
+      log("Longitude: " + longitude);
 
       // Remove boxes outside the 30-meter boundary
       boxes.forEach((box) => {
@@ -65,6 +69,20 @@ const ARScene = () => {
                 long: manhole.long,
               })
           );
+
+          if (manholeModels.length > 0) {
+            // Assuming you want to log the distance to the first manhole
+            const firstManhole = manholeModels[0];
+            const distance = calculateDistance(
+              latitude,
+              longitude,
+              firstManhole.lat,
+              firstManhole.long
+            );
+            log(
+              `Distance to ${firstManhole.name}: ${distance.toFixed(2)} meters`
+            );
+          }
 
           // Now you can use manholeModels, which is an array of ManholeModel instances
           //console.log(manholeModels);

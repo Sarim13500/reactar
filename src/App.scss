@@ -20,9 +20,10 @@ h1 {
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
   width: 100%;
-  max-height: 20%;
+  max-height: 30%; /* Increased from 20% to 30% */
   overflow: auto;
   padding: 10px;
   box-sizing: border-box;
-  font-size: 12px;
+  font-size: 16px; /* Increased from 12px to 16px */
+  z-index: 1000; /* Ensure it's above other elements */
 }

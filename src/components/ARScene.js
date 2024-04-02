@@ -204,7 +204,7 @@ const ARScene = ({ log }) => {
     const context = canvas.getContext("2d");
     context.font = "16px Arial";
     context.fillStyle = "rgba(255,255,255,0.95)";
-    context.fillText(text, canvas.width / 4, canvas.height / 4);
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
 
     const texture = new THREE.Texture(canvas);
     texture.needsUpdate = true;

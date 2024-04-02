@@ -104,7 +104,7 @@ const ARScene = ({ log }) => {
               const boxMesh = new THREE.Mesh(geom, mtl);
 
               // Adjust the position of the box based on the manhole's longitude and latitude
-              boxMesh.position.set(manholeModel.long, -0.5, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
+              boxMesh.position.set(manholeModel.long, -1, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
 
               // Prepare data for rendering
               const boxData = {
@@ -202,7 +202,7 @@ const ARScene = ({ log }) => {
     canvas.width = 128; // Set the width of the canvas
     canvas.height = 64; // Set the height of the canvas
     const context = canvas.getContext("2d");
-    context.font = "Bold 10px Arial";
+    context.font = "Bold 5px Arial";
     context.fillStyle = "rgba(255,255,255,0.95)";
     context.fillText(text, canvas.width / 2, canvas.height / 2);
 

@@ -8,6 +8,8 @@ const ARScene = ({ log }) => {
   const canvasRef = useRef(null);
   const boxes = []; // Array to store boxes
   const labels = []; // Array to store labels
+  let lastLat = -1;
+  let lastLong = -1;
 
   useEffect(() => {
     // Function to handle location updates
@@ -50,75 +52,84 @@ const ARScene = ({ log }) => {
       });
 
       // Fetch new data from the API and add objects to the scene
-      axios
-        .get(
-          `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
-        )
-        .then((response) => {
-          const manholeModels = response.data.map(
-            (manhole) =>
-              new ManholeModel({
-                id: manhole.id,
-                featureTypeId: manhole.featureTypeId,
-                name: manhole.name,
-                subSection: manhole.subSection,
-                county: manhole.county,
-                srid: manhole.srid,
-                wkt: manhole.wkt,
-                lat: manhole.lat,
-                long: manhole.long,
-              })
-          );
-
-          if (manholeModels.length > 0) {
-            // Assuming you want to log the distance to the first manhole
-            const firstManhole = manholeModels[0];
-            const distance = calculateDistance(
-              latitude,
-              longitude,
-              firstManhole.lat,
-              firstManhole.long
+      if (
+        Math.abs(latitude - lastLat) > 0.0001 ||
+        Math.abs(longitude - lastLong) > 0.0001
+      ) {
+        lastLat = latitude;
+        lastLong = longitude;
+        axios
+          .get(
+            `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
+          )
+          .then((response) => {
+            const manholeModels = response.data.map(
+              (manhole) =>
+                new ManholeModel({
+                  id: manhole.id,
+                  featureTypeId: manhole.featureTypeId,
+                  name: manhole.name,
+                  subSection: manhole.subSection,
+                  county: manhole.county,
+                  srid: manhole.srid,
+                  wkt: manhole.wkt,
+                  lat: manhole.lat,
+                  long: manhole.long,
+                })
             );
-            log(
-              `Distance to ${firstManhole.name}: ${distance.toFixed(2)} meters`
-            );
-          }
 
-          // Now you can use manholeModels, which is an array of ManholeModel instances
-          //console.log(manholeModels);
+            if (manholeModels.length > 0) {
+              // Assuming you want to log the distance to the first manhole
+              const firstManhole = manholeModels[0];
+              const distance = calculateDistance(
+                latitude,
+                longitude,
+                firstManhole.lat,
+                firstManhole.long
+              );
+              log(
+                `Distance to ${firstManhole.name}: ${distance.toFixed(
+                  2
+                )} meters`
+              );
+            }
 
-          manholeModels.forEach((manholeModel) => {
-            console.log(manholeModel);
-            const geom = new THREE.BoxGeometry(1, 1, 1);
-            const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
-            const boxMesh = new THREE.Mesh(geom, mtl);
+            // Now you can use manholeModels, which is an array of ManholeModel instances
+            //console.log(manholeModels);
 
-            // Adjust the position of the box based on the manhole's longitude and latitude
-            boxMesh.position.set(manholeModel.long, -0.5, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
+            manholeModels.forEach((manholeModel) => {
+              console.log(manholeModel);
+              const geom = new THREE.BoxGeometry(1, 1, 1);
+              const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
+              const boxMesh = new THREE.Mesh(geom, mtl);
 
-            // Prepare data for rendering
-            const boxData = {
-              mesh: boxMesh,
-              lat: manholeModel.lat,
-              long: manholeModel.long,
-            };
-            boxes.push(boxData);
+              // Adjust the position of the box based on the manhole's longitude and latitude
+              boxMesh.position.set(manholeModel.long, -0.5, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
 
-            // Create and store text label
-            const label = createLabel(manholeModel.name);
-            labels.push(label); // Store the label
-            scene.add(label); // Add the label to the scene
+              // Prepare data for rendering
+              const boxData = {
+                mesh: boxMesh,
+                lat: manholeModel.lat,
+                long: manholeModel.long,
+              };
+              boxes.push(boxData);
 
-            // Attach label to the box
-            boxData.label = label;
+              // Create and store text label
+              const label = createLabel(manholeModel.name);
+              labels.push(label); // Store the label
+              scene.add(label); // Add the label to the scene
 
-            // Add boxMesh to the scene (adjust according to your AR library usage)
-            arjs.add(boxMesh, manholeModel.long, manholeModel.lat);
+              // Attach label to the box
+              boxData.label = label;
+
+              // Add boxMesh to the scene (adjust according to your AR library usage)
+              arjs.add(boxMesh, manholeModel.long, manholeModel.lat);
+            });
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
           });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+      }
     };
 
     // Start watching for location updates

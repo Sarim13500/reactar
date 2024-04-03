@@ -106,7 +106,7 @@ const ARScene = ({ log }) => {
               );
 
               console.log(manholeModel);
-              const geom = new THREE.ConeGeometry(5, 10, 32);
+              const geom = new THREE.CylinderGeometry(5, 5, 1, 8);
               const mtl = new THREE.MeshBasicMaterial({
                 color: 0x55a1e8,
                 opacity: 0.8,
@@ -164,7 +164,7 @@ const ARScene = ({ log }) => {
       camera
     );
 
-    arjs.startGps();
+    arjs.fakeGps(10.758257, 59.90794);
 
     // Render function
     function render() {

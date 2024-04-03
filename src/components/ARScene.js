@@ -106,7 +106,7 @@ const ARScene = ({ log }) => {
               );
 
               console.log(manholeModel);
-              const geom = new THREE.CylinderGeometry(5, 5, 1, 8);
+              const geom = new THREE.CylinderGeometry(1.5, 1.5, 1, 8);
               const mtl = new THREE.MeshBasicMaterial({
                 color: 0x55a1e8,
                 opacity: 0.8,
@@ -212,19 +212,26 @@ const ARScene = ({ log }) => {
   // Function to create text label
   const createLabel = (text) => {
     const canvas = document.createElement("canvas");
-    canvas.width = 128; // Set the width of the canvas
-    canvas.height = 64; // Set the height of the canvas
+    // Increase canvas resolution for better clarity
+    canvas.width = 256; // Higher resolution
+    canvas.height = 128;
+
     const context = canvas.getContext("2d");
-    context.font = "8px Arial";
+    // Adjust for high resolution canvas to keep text small but clear
+    context.font = "16px Arial"; // Slightly larger font for clarity, adjusted for higher resolution
     context.fillStyle = "rgba(255,255,255,0.95)";
-    context.fillText(text, canvas.width / 2, canvas.height / 2);
+    context.textAlign = "center"; // Ensure text is centered
+    context.textBaseline = "middle"; // Vertically align text in the middle
+    context.fillText(text, canvas.width / 2, canvas.height / 2); // Draw text in the center of canvas
 
     const texture = new THREE.Texture(canvas);
     texture.needsUpdate = true;
 
     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
     const sprite = new THREE.Sprite(spriteMaterial);
-    sprite.scale.set(30, 15, 1);
+    // Adjust sprite scale to fit the text comfortably above the box
+    // Scale down to make the label appear smaller in the scene
+    sprite.scale.set(15, 7.5, 1); // Adjusted scale for better legibility and size
     return sprite;
   };
 

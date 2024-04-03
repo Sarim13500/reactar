@@ -99,8 +99,12 @@ const ARScene = ({ log }) => {
 
             manholeModels.forEach((manholeModel) => {
               console.log(manholeModel);
-              const geom = new THREE.CapsuleGeometry(1, 30, 4, 8);
-              const mtl = new THREE.MeshBasicMaterial({ color: 0x55a1e8 });
+              const geom = new THREE.CylinderGeometry(1, 1, 0.2, 32);
+              const mtl = new THREE.MeshBasicMaterial({
+                color: 0x55a1e8,
+                opacity: 0.5,
+                transparent: true,
+              });
               const boxMesh = new THREE.Mesh(geom, mtl);
 
               // Adjust the position of the box based on the manhole's longitude and latitude

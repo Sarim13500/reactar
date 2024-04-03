@@ -102,7 +102,7 @@ const ARScene = ({ log }) => {
               const geom = new THREE.ConeGeometry(5, 20, 32);
               const mtl = new THREE.MeshBasicMaterial({
                 color: 0x55a1e8,
-                opacity: 0.5,
+                opacity: 0.8,
                 transparent: true,
               });
               const boxMesh = new THREE.Mesh(geom, mtl);

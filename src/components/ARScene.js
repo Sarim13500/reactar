@@ -106,7 +106,7 @@ const ARScene = ({ log }) => {
               );
 
               console.log(manholeModel);
-              const geom = new THREE.ConeGeometry(5, 20, 32);
+              const geom = new THREE.ConeGeometry(5, 10, 32);
               const mtl = new THREE.MeshBasicMaterial({
                 color: 0x55a1e8,
                 opacity: 0.8,

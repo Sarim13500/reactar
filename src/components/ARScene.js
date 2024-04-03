@@ -99,7 +99,7 @@ const ARScene = ({ log }) => {
 
             manholeModels.forEach((manholeModel) => {
               console.log(manholeModel);
-              const geom = new THREE.CapsuleGeometry(1, 1, 4, 8);
+              const geom = new THREE.ConeGeometry(5, 20, 32);
               const mtl = new THREE.MeshBasicMaterial({
                 color: 0x55a1e8,
                 opacity: 0.5,

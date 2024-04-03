@@ -99,7 +99,7 @@ const ARScene = ({ log }) => {
 
             manholeModels.forEach((manholeModel) => {
               console.log(manholeModel);
-              const geom = new THREE.CylinderGeometry(1, 1, 0.2, 32);
+              const geom = new THREE.CapsuleGeometry(1, 1, 4, 8);
               const mtl = new THREE.MeshBasicMaterial({
                 color: 0x55a1e8,
                 opacity: 0.5,
@@ -206,7 +206,7 @@ const ARScene = ({ log }) => {
     canvas.width = 128; // Set the width of the canvas
     canvas.height = 64; // Set the height of the canvas
     const context = canvas.getContext("2d");
-    context.font = "16px Arial";
+    context.font = "8px Arial";
     context.fillStyle = "rgba(255,255,255,0.95)";
     context.fillText(text, canvas.width / 2, canvas.height / 2);
 

@@ -98,13 +98,19 @@ const ARScene = ({ log }) => {
             //console.log(manholeModels);
 
             manholeModels.forEach((manholeModel) => {
+              const distance = calculateDistance(
+                latitude,
+                longitude,
+                manholeModel.lat,
+                manholeModel.long
+              );
+
               console.log(manholeModel);
               const geom = new THREE.ConeGeometry(5, 20, 32);
               const mtl = new THREE.MeshBasicMaterial({
                 color: 0x55a1e8,
                 opacity: 0.8,
                 transparent: true,
-                depthWrite: false, // Add this line
               });
               const boxMesh = new THREE.Mesh(geom, mtl);
 
@@ -121,7 +127,7 @@ const ARScene = ({ log }) => {
 
               // Create and store text label
               const label = createLabel(
-                manholeModel.name + " " + distance.toFixed(0) + "m"
+                `${manholeModel.name} ${distance.toFixed(0)}m`
               );
               labels.push(label); // Store the label
               scene.add(label); // Add the label to the scene

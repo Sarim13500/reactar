@@ -164,7 +164,7 @@ const ARScene = ({ log }) => {
       camera
     );
 
-    arjs.fakeGps(10.758257, 59.90794);
+    arjs.startGps();
 
     // Render function
     function render() {

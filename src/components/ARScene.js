@@ -196,7 +196,7 @@ const ARScene = ({ log }) => {
         if (intersectedObject.isManhole) {
           // Logikk for å vise informasjonsboks for hvert "manhole"-objekt som er truffet
           alert(`Informasjon om manhole: ${intersectedObject.manholeData}`);
-          break; // Fjern break hvis du vil tillate interaksjon med flere manholes samtidig
+          //break; // Fjern break hvis du vil tillate interaksjon med flere manholes samtidig
         }
       }
     }

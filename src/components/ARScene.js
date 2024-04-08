@@ -56,6 +56,11 @@ const ARScene = ({ log }) => {
       ) {
         lastLat = latitude;
         lastLong = longitude;
+
+        // Fjerne gamle etiketter før du legger til nye
+        labels.forEach((label) => scene.remove(label));
+        labels.length = 0; // Tøm labels-arrayet for å forberede for nye etiketter
+
         axios
           .get(
             `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`

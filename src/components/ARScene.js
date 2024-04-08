@@ -78,6 +78,7 @@ const ARScene = ({ log }) => {
                   wkt: manhole.wkt,
                   lat: manhole.lat,
                   long: manhole.long,
+                  bruksmateriale: manhole.bruksmateriale,
                 })
             );
 
@@ -93,7 +94,7 @@ const ARScene = ({ log }) => {
               );
 
               console.log(manholeModel);
-              const geom = new THREE.CylinderGeometry(1, 1, 0.5, 8);
+              const geom = new THREE.BoxGeometry(1, 1, 1);
               const mtl = new THREE.MeshBasicMaterial({
                 color: 0x55a1e8,
                 opacity: 0.8,
@@ -102,7 +103,7 @@ const ARScene = ({ log }) => {
               const boxMesh = new THREE.Mesh(geom, mtl);
 
               boxMesh.isManhole = true; // Marker mesh som en manhole for identifikasjon ved klikk
-              boxMesh.manholeData = `Kumlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}`; // Legg til data for bruk ved klikk
+              boxMesh.manholeData = `Kumlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}, Bruksmateriale: ${manholeModel.bruksmateriale}`; // Legg til data for bruk ved klikk
 
               // Adjust the position of the box based on the manhole's longitude and latitude
               boxMesh.position.set(manholeModel.long, -1, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system

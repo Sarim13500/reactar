@@ -9,6 +9,7 @@ export class ManholeModel {
     wkt,
     lat,
     long,
+    bruksmateriale,
   }) {
     this.id = id;
     this.featureTypeId = featureTypeId;
@@ -19,6 +20,7 @@ export class ManholeModel {
     this.wkt = wkt;
     this.lat = lat;
     this.long = long;
+    this.bruksmateriale = bruksmateriale;
   }
 
   // Her kan du legge til metoder som beregner avstand, eller andre hjelpefunksjoner

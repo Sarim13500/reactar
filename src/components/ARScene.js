@@ -106,7 +106,7 @@ const ARScene = ({ log }) => {
               );
 
               console.log(manholeModel);
-              const geom = new THREE.CylinderGeometry(1.5, 1.5, 1, 8);
+              const geom = new THREE.CylinderGeometry(1, 1, 0.5, 8);
               const mtl = new THREE.MeshBasicMaterial({
                 color: 0x55a1e8,
                 opacity: 0.8,

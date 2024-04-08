@@ -22,10 +22,6 @@ const ARScene = ({ log }) => {
       console.log("Latitude:", latitude);
       console.log("Longitude:", longitude);
 
-      // Use the provided log function instead of console.log
-      log("Latitude: " + latitude);
-      log("Longitude: " + longitude);
-
       // Remove boxes outside the 30-meter boundary
       boxes.forEach((box) => {
         const distance = calculateDistance(
@@ -80,22 +76,6 @@ const ARScene = ({ log }) => {
                 })
             );
 
-            if (manholeModels.length > 0) {
-              // Assuming you want to log the distance to the first manhole
-              const firstManhole = manholeModels[0];
-              const distance = calculateDistance(
-                latitude,
-                longitude,
-                firstManhole.lat,
-                firstManhole.long
-              );
-              log(
-                `Distance to ${firstManhole.name}: ${distance.toFixed(
-                  2
-                )} meters`
-              );
-            }
-
             // Now you can use manholeModels, which is an array of ManholeModel instances
             //console.log(manholeModels);
 
@@ -117,7 +97,7 @@ const ARScene = ({ log }) => {
               const boxMesh = new THREE.Mesh(geom, mtl);
 
               boxMesh.isManhole = true; // Marker mesh som en manhole for identifikasjon ved klikk
-              boxMesh.manholeData = `Komlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}`; // Legg til data for bruk ved klikk
+              boxMesh.manholeData = `Kumlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}`; // Legg til data for bruk ved klikk
 
               // Adjust the position of the box based on the manhole's longitude and latitude
               boxMesh.position.set(manholeModel.long, -1, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
@@ -203,12 +183,14 @@ const ARScene = ({ log }) => {
 
       const intersects = raycaster.intersectObjects(scene.children);
 
-      if (intersects.length > 0) {
-        const intersectedObject = intersects[0].object;
-        // Sjekk om det treffede objektet er en sylinder (manhole) basert på en unik egenskap, for eksempel navn eller en egendefinert egenskap
+      // Iterer over alle treff for å finne "manhole"-objekter, ikke bare det første
+      for (let i = 0; i < intersects.length; i++) {
+        const intersectedObject = intersects[i].object;
+        // Sjekk om det treffede objektet er en sylinder (manhole) basert på en unik egenskap
         if (intersectedObject.isManhole) {
-          // Logikk for å vise informasjonsboks her
-          alert(`Informasjon om komlokk: ${intersectedObject.manholeData}`);
+          // Logikk for å vise informasjonsboks for hvert "manhole"-objekt som er truffet
+          alert(`Informasjon om manhole: ${intersectedObject.manholeData}`);
+          break; // Fjern break hvis du vil tillate interaksjon med flere manholes samtidig
         }
       }
     }

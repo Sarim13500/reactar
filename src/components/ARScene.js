@@ -10,6 +10,8 @@ const ARScene = ({ log }) => {
   const labels = []; // Array to store labels
   let lastLat = -1;
   let lastLong = -1;
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
 
   useEffect(() => {
     // Function to handle location updates
@@ -114,6 +116,9 @@ const ARScene = ({ log }) => {
               });
               const boxMesh = new THREE.Mesh(geom, mtl);
 
+              boxMesh.isManhole = true; // Marker mesh som en manhole for identifikasjon ved klikk
+              boxMesh.manholeData = `Komlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}`; // Legg til data for bruk ved klikk
+
               // Adjust the position of the box based on the manhole's longitude and latitude
               boxMesh.position.set(manholeModel.long, -1, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
 
@@ -185,6 +190,28 @@ const ARScene = ({ log }) => {
 
     // Start the render loop
     render();
+
+    // Legg til etter render-funksjonen i useEffect
+    canvas.addEventListener("click", onCanvasClick, false);
+
+    function onCanvasClick(event) {
+      event.preventDefault();
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersects = raycaster.intersectObjects(scene.children);
+
+      if (intersects.length > 0) {
+        const intersectedObject = intersects[0].object;
+        // Sjekk om det treffede objektet er en sylinder (manhole) basert på en unik egenskap, for eksempel navn eller en egendefinert egenskap
+        if (intersectedObject.isManhole) {
+          // Logikk for å vise informasjonsboks her
+          alert(`Informasjon om komlokk: ${intersectedObject.manholeData}`);
+        }
+      }
+    }
 
     // Clean up function
     return () => {

@@ -17,12 +17,17 @@
     border: none;
     cursor: pointer;
 <<<<<<< HEAD:src/components/HamburgerMenu.scss
+<<<<<<< HEAD:src/components/HamburgerMenu.scss
     font-size: 84px; // Larger icon size for better visibility
     color: black; // Color of the icon
     padding: 0 20px; // Larger padding for an easier touch target
 =======
     font-size: 48px; // Larger icon size for better visibility
     color: #fff; // Color of the icon
+=======
+    font-size: 70px; // Larger icon size for better visibility
+    color: black; // Color of the icon
+>>>>>>> 66cdccc (Fikset slik at vi kan gp inn i kumlokk og se mock data):src/HamburgerMenu.scss
     padding: 20px; // Larger padding for an easier touch target
 >>>>>>> ab64da2 (Denne funker med hamburgermeny, men u kan ikke navigere videre):src/HamburgerMenu.scss
     z-index: 1001; // Ensure the button is above the menu items
@@ -38,10 +43,14 @@
     top: 0; // Starts from the very top of the screen
     right: 0;
 <<<<<<< HEAD:src/components/HamburgerMenu.scss
+<<<<<<< HEAD:src/components/HamburgerMenu.scss
     width: 475px; // Width of the menu
 =======
     width: 250px; // Width of the menu
 >>>>>>> ab64da2 (Denne funker med hamburgermeny, men u kan ikke navigere videre):src/HamburgerMenu.scss
+=======
+    width: 400px; // Width of the menu
+>>>>>>> 66cdccc (Fikset slik at vi kan gp inn i kumlokk og se mock data):src/HamburgerMenu.scss
     height: 100vh; // Full height of the viewport
     background-color: rgba(51, 51, 51, 0.95); // Slightly transparent gray
     padding-top: 100px; // Adjusted padding to push down the links
@@ -66,9 +75,9 @@
 =======
     a {
       color: #fff;
-      padding: 20px 15px; // Larger padding for bigger tap targets
+      padding: 40px 15px; // Larger padding for bigger tap targets
       text-decoration: none;
-      font-size: 24px; // Larger font size for menu items
+      font-size: 30px; // Larger font size for menu items
       border-bottom: 1px solid #eee; // Separator between items
 >>>>>>> ab64da2 (Denne funker med hamburgermeny, men u kan ikke navigere videre):src/HamburgerMenu.scss
       &:last-child {

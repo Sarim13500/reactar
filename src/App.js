@@ -1,50 +1,19 @@
 import React, { useState } from "react";
-import ARScene from "./components/ARScene";
-import HamburgerMenu from "./components/HamburgerMenu";
+import ARScene from "./components/ARScene"; // Adjust the path as necessary
 import "./App.scss";
-import LagredeKumlokk from "./components/LagredeKumlokk";
-import Innstillinger from "./components/Innstillinger";
-import Filtrering from "./components/Filtrering";
+import HamburgerMenu from "./HamburgerMenu"; // Juster importbanen etter behov
 
 function App() {
   const [logs, setLogs] = useState([]);
-  const [currentPage, setCurrentPage] = useState("arScene");
-
-  // Define manholeData and setManholeData here
-  const [manholeData, setManholeData] = useState([]); // Assuming it's an array
 
   const log = (message) => {
     setLogs((prevLogs) => [...prevLogs, message]);
   };
 
-  const navigateTo = (page) => {
-    setCurrentPage(page);
-  };
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case "lagredeKumlokk":
-        return <LagredeKumlokk />;
-      case "innstillinger":
-        return <Innstillinger />;
-      default:
-        return (
-          <>
-            <ARScene log={log} setManholeData={setManholeData} />
-            {/* Pass manholeData and setManholeData to Filtrering */}
-            <Filtrering
-              manholeData={manholeData}
-              setFilteredData={setManholeData}
-            />
-          </>
-        );
-    }
-  };
-
   return (
     <div className="app">
-      <HamburgerMenu navigateTo={navigateTo} />
-      {renderPage()}
+      <HamburgerMenu /> {/* HamburgerMenu komponenten er lagt til her */}
+      <ARScene log={log} />
       <div className="log-messages">
         {logs.map((log, index) => (
           <div key={index}>{log}</div>

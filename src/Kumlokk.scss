@@ -1,0 +1,53 @@
+// LagredeKumlokk.scss
+.kumlokk {
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 0 auto;
+
+  h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .kumlokk-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+
+    h3 {
+      color: #e74c3c; // Rød farge for tittelen
+      margin-bottom: 5px;
+    }
+
+    p {
+      color: #333;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+
+    &:hover {
+      background-color: darken(#3498db, 10%);
+    }
+  }
+}

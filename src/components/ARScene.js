@@ -244,7 +244,7 @@ const ARScene = ({ log }) => {
 
     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
     const sprite = new THREE.Sprite(spriteMaterial);
-    // Adjust sprite scale to fit the text comfortably above the box
+    // Adjust spjirite scale to fit the text comfortably above the box
     // Scale down to make the label appear smaller in the scene
     sprite.scale.set(15, 7.5, 1); // Adjusted scale for better legibility and size
     return sprite;

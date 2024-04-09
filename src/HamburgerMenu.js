@@ -1,27 +1,46 @@
-import React, { useState } from "react";
-import "./HamburgerMenu.scss"; // Anta at du har en egen SCSS-fil for styling
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom"; // Import Link component
+import "./HamburgerMenu.scss";
 
-function HamburgerMenu() {
+const HamburgerMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(); // Create a ref for the menu
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleClickOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const menuClass = isOpen ? "menu-items show" : "menu-items";
+
   return (
-    <div>
-      <button className="hamburger-button" onClick={toggleMenu}>
-        ☰
-      </button>
-      {isOpen && (
-        <div className="menu">
-          <a href="#section1">Link 1</a>
-          <a href="#section2">Link 2</a>
-          <a href="#section3">Link 3</a>
-        </div>
-      )}
+    <div className="hamburger-menu" ref={menuRef}>
+      <button onClick={toggleMenu}>{isOpen ? "X" : "☰"}</button>
+      <div className={menuClass}>
+        <Link to="/lagrede-kumlokk" onClick={() => setIsOpen(false)}>
+          Lagrede Kumlokk
+        </Link>
+        <Link to="/filtrering" onClick={() => setIsOpen(false)}>
+          Filtrering
+        </Link>
+        <Link to="/innstillinger" onClick={() => setIsOpen(false)}>
+          Innstillinger
+        </Link>
+      </div>
     </div>
   );
-}
+};
 
 export default HamburgerMenu;

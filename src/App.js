@@ -1,25 +1,25 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useState } from "react";
 import ARScene from "./components/ARScene"; // Adjust the path as necessary
-import HamburgerMenu from "./HamburgerMenu";
 import "./App.scss";
-import LagredeKumlokk from "./LagredeKumlokk";
-import Filtrering from "./Filtrering";
-import Innstillinger from "./Innstillinger";
+import HamburgerMenu from "./HamburgerMenu"; // Juster importbanen etter behov
 
 function App() {
+  const [logs, setLogs] = useState([]);
+
+  const log = (message) => {
+    setLogs((prevLogs) => [...prevLogs, message]);
+  };
+
   return (
-    <Router>
-      <div className="app">
-        <HamburgerMenu />
-        <Routes>
-          <Route path="/" element={<ARScene />} />
-          <Route path="/lagrede-kumlokk" element={<LagredeKumlokk />} />
-          <Route path="/filtrering" element={<Filtrering />} />
-          <Route path="/innstillinger" element={<Innstillinger />} />
-        </Routes>
+    <div className="app">
+      <HamburgerMenu /> {/* HamburgerMenu komponenten er lagt til her */}
+      <ARScene log={log} />
+      <div className="log-messages">
+        {logs.map((log, index) => (
+          <div key={index}>{log}</div>
+        ))}
       </div>
-    </Router>
+    </div>
   );
 }
 

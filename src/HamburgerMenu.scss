@@ -15,7 +15,7 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
-    font-size: 80px; // Larger icon size for better visibility
+    font-size: 48px; // Larger icon size for better visibility
     color: #fff; // Color of the icon
     padding: 20px; // Larger padding for an easier touch target
     z-index: 1001; // Ensure the button is above the menu items
@@ -29,7 +29,7 @@
     position: fixed; // Fixed position
     top: 0; // Starts from the very top of the screen
     right: 0;
-    width: 400px; // Width of the menu
+    width: 250px; // Width of the menu
     height: 100vh; // Full height of the viewport
     background-color: rgba(51, 51, 51, 0.95); // Slightly transparent gray
     padding-top: 100px; // Adjusted padding to push down the links
@@ -42,10 +42,10 @@
 
     a {
       color: #fff;
-      padding: 70px 15px; // Larger padding for bigger tap targets
+      padding: 20px 15px; // Larger padding for bigger tap targets
       text-decoration: none;
-      font-size: 35px; // Larger font size for menu items
-      border-bottom: 5px solid #eee; // Separator between items
+      font-size: 24px; // Larger font size for menu items
+      border-bottom: 1px solid #eee; // Separator between items
       &:last-child {
         border-bottom: none; // No border for the last item
       }

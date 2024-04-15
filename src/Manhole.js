@@ -10,6 +10,7 @@ export class ManholeModel {
     lat,
     long,
     type,
+    sistModifisert,
   }) {
     this.id = id;
     this.featureTypeId = featureTypeId;
@@ -21,6 +22,7 @@ export class ManholeModel {
     this.lat = lat;
     this.long = long;
     this.type = type;
+    this.sistModifisert = sistModifisert;
   }
 
   // Her kan du legge til metoder som beregner avstand, eller andre hjelpefunksjoner

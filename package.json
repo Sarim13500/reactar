@@ -6,6 +6,7 @@
   "private": false,
   "homepage": "https://sarim13500.github.io/reactar/",
   "scripts": {
+    "start": "webpack-dev-server --https --mode development",
     "serve": "webpack serve --mode development",
     "build": "webpack --mode production",
     "predeploy": "npm run build",

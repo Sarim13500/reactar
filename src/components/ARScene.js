@@ -80,6 +80,7 @@ const ARScene = ({ log }) => {
                     lat: manhole.lat,
                     long: manhole.long,
                     type: manhole.type,
+                    sistModifisert: manhole.sistModifisert,
                   })
               );
 

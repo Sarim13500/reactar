@@ -15,10 +15,11 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
-    font-size: 70px; // Larger icon size for better visibility
-    color: black; // Color of the icon
+    font-size: 48px; // Larger icon size for better visibility
+    color: #fff; // Color of the icon
     padding: 20px; // Larger padding for an easier touch target
     z-index: 1001; // Ensure the button is above the menu items
+
     &:focus {
       outline: none;
     }
@@ -29,7 +30,7 @@
     position: fixed; // Fixed position
     top: 0; // Starts from the very top of the screen
     right: 0;
-    width: 400px; // Width of the menu
+    width: 300px; // Width of the menu
     height: 100vh; // Full height of the viewport
     background-color: rgba(51, 51, 51, 0.95); // Slightly transparent gray
     padding-top: 100px; // Adjusted padding to push down the links
@@ -40,15 +41,20 @@
     flex-direction: column;
     justify-content: flex-start;
 
-    a {
+    button {
       color: #fff;
-      padding: 40px 15px; // Larger padding for bigger tap targets
+      padding: 30px 15px; // Larger padding for bigger tap targets
       text-decoration: none;
-      font-size: 30px; // Larger font size for menu items
+      font-size: 24px; // Larger font size for menu items
       border-bottom: 1px solid #eee; // Separator between items
+      background: none; // Make sure the button has no background
+      width: 100%; // Ensure buttons occupy the full width
+      text-align: left; // Align the text to the left
+
       &:last-child {
         border-bottom: none; // No border for the last item
       }
+
       &:hover {
         background-color: #575757; // Darker background on hover
       }

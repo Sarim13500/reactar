@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import ARScene from "./components/ARScene"; // Adjust the path as necessary
 import "./App.scss";
-import HamburgerMenu from "./HamburgerMenu";
-import Kumlokk from "./Kumlokk";
-import Innstillinger from "./Innstillinger"; // Juster importbanen etter behov
+import HamburgerMenu from "./components/HamburgerMenu";
+import Kumlokk from "./components/LagredeKumlokk";
+import Innstillinger from "./components/Innstillinger"; // Juster importbanen etter behov
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");

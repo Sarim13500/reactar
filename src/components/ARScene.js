@@ -78,9 +78,11 @@ const ARScene = ({ log }) => {
                   wkt: manhole.wkt,
                   lat: manhole.lat,
                   long: manhole.long,
-                  bruksmateriale: manhole.bruksmateriale,
+                  type: manhole.type,
                 })
             );
+
+            localStorage.setItem("manholeData", JSON.stringify(manholeModels));
 
             // Now you can use manholeModels, which is an array of ManholeModel instances
             //console.log(manholeModels);

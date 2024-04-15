@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from "react";
 import {
   FaUserCircle,
@@ -41,5 +42,19 @@ const Innstillinger = () => {
     </div>
   );
 };
+=======
+// LagredeKumlokk.js
+import React from "react";
+
+// Inkluder dette i din LagredeKumlokk komponent
+function Innstillinger({ onGoBack }) {
+  return (
+    <div>
+      Dette er siden for Innstillinger.
+      <button onClick={onGoBack}>Gå Tilbake</button>
+    </div>
+  );
+}
+>>>>>>> 4fe0a77 (Chass med lagrede kummer ekte)
 
 export default Innstillinger;

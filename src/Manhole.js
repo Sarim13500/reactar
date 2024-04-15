@@ -10,7 +10,10 @@ export class ManholeModel {
     lat,
     long,
     type,
+<<<<<<< HEAD
     sistModifisert,
+=======
+>>>>>>> 4fe0a77 (Chass med lagrede kummer ekte)
   }) {
     this.id = id;
     this.featureTypeId = featureTypeId;
@@ -22,7 +25,10 @@ export class ManholeModel {
     this.lat = lat;
     this.long = long;
     this.type = type;
+<<<<<<< HEAD
     this.sistModifisert = sistModifisert;
+=======
+>>>>>>> 4fe0a77 (Chass med lagrede kummer ekte)
   }
 
   // Her kan du legge til metoder som beregner avstand, eller andre hjelpefunksjoner

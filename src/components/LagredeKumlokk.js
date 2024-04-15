@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 import { FaFingerprint, FaMapPin, FaBars, FaChevronDown } from "react-icons/fa";
 import { GiCircleCage } from "react-icons/gi";
@@ -6,10 +7,17 @@ import "./LagredeKumlokk.scss";
 const LagredeKumlokk = () => {
   const [expandedId, setExpandedId] = useState(null);
 
+=======
+import React from "react";
+import "./LagredeKumlokk.scss";
+
+const LagredeKumlokk = () => {
+>>>>>>> 4fe0a77 (Chass med lagrede kummer ekte)
   // Hente data fra localStorage
   const storedData = localStorage.getItem("manholeData");
   const manholeData = storedData ? JSON.parse(storedData) : [];
 
+<<<<<<< HEAD
   const toggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id);
   };
@@ -60,6 +68,34 @@ const LagredeKumlokk = () => {
             )}
           </div>
         ))
+=======
+  return (
+    <div>
+      <h2>Lagrede Kumlokk</h2>
+      {manholeData.length > 0 ? (
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Navn</th>
+              <th>Fylke</th>
+              <th>Type</th>
+              <th>Srid</th>
+            </tr>
+          </thead>
+          <tbody>
+            {manholeData.map((manhole, index) => (
+              <tr key={index}>
+                <td>{manhole.id}</td>
+                <td>{manhole.name}</td>
+                <td>{manhole.county}</td>
+                <td>{manhole.type}</td>
+                <td>{manhole.srid}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+>>>>>>> 4fe0a77 (Chass med lagrede kummer ekte)
       ) : (
         <p>Ingen lagrede kumlokk funnet.</p>
       )}

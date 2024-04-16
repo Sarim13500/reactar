@@ -1,7 +1,7 @@
 h1 {
   color: pink;
 }
-//Vi får opp
+
 .app {
   width: 100vw;
   height: 100vh;
@@ -11,6 +11,19 @@ h1 {
   margin: 0;
   padding: 0;
   overflow: hidden;
+
+  .filter-icon {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      color: #ccc; // Lysere farge på hover for å gi visuell feedback
+    }
+  }
 }
 
 .log-messages {
@@ -20,10 +33,10 @@ h1 {
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
   width: 100%;
-  max-height: 30%; /* Increased from 20% to 30% */
+  max-height: 30%;
   overflow: auto;
   padding: 10px;
   box-sizing: border-box;
-  font-size: 16px; /* Increased from 12px to 16px */
-  z-index: 1000; /* Ensure it's above other elements */
+  font-size: 16px;
+  z-index: 1000; // Sørger for at den er over andre elementer
 }

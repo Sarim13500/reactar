@@ -14,6 +14,8 @@ const ARScene = ({ log }) => {
   const mouse = new THREE.Vector2();
 
   useEffect(() => {
+    let scene, camera, renderer, arjs, cam, deviceOrientationControls;
+
     // Function to handle location updates
     const handleLocationUpdate = () => {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -42,9 +44,9 @@ const ARScene = ({ log }) => {
               box.label.visible = true; // Show the label if it exists
               // Adjust label position above the box
               box.label.position.set(
-                box.mesh.position.x,
+                box.lat,
                 box.mesh.position.y + 1, // Adjust this offset as needed
-                box.mesh.position.z
+                box.long
               );
             }
           }
@@ -58,9 +60,9 @@ const ARScene = ({ log }) => {
           lastLat = latitude;
           lastLong = longitude;
 
-          // Fjerne gamle etiketter før du legger til nye
+          // Clear old labels before adding new ones
           labels.forEach((label) => scene.remove(label));
-          labels.length = 0; // Tøm labels-arrayet for å forberede for nye etiketter
+          labels.length = 0;
 
           axios
             .get(
@@ -89,9 +91,6 @@ const ARScene = ({ log }) => {
                 JSON.stringify(manholeModels)
               );
 
-              // Now you can use manholeModels, which is an array of ManholeModel instances
-              //console.log(manholeModels);
-
               manholeModels.forEach((manholeModel) => {
                 const distance = calculateDistance(
                   latitude,
@@ -100,7 +99,6 @@ const ARScene = ({ log }) => {
                   manholeModel.long
                 );
 
-                console.log(manholeModel);
                 const geom = new THREE.CylinderGeometry(1, 1, 0.5, 8);
                 const mtl = new THREE.MeshBasicMaterial({
                   color: 0x55a1e8,
@@ -109,13 +107,12 @@ const ARScene = ({ log }) => {
                 });
                 const boxMesh = new THREE.Mesh(geom, mtl);
 
-                boxMesh.isManhole = true; // Marker mesh som en manhole for identifikasjon ved klikk
-                boxMesh.manholeData = `Kumlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}, Bruksmateriale: ${manholeModel.bruksmateriale}`; // Legg til data for bruk ved klikk
+                boxMesh.isManhole = true;
+                boxMesh.manholeData = `Kumlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}, Bruksmateriale: ${manholeModel.bruksmateriale}`;
 
                 // Adjust the position of the box based on the manhole's longitude and latitude
-                boxMesh.position.set(manholeModel.long, -1, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
+                boxMesh.position.set(manholeModel.lat, -1, manholeModel.long);
 
-                // Prepare data for rendering
                 const boxData = {
                   mesh: boxMesh,
                   lat: manholeModel.lat,
@@ -127,14 +124,14 @@ const ARScene = ({ log }) => {
                 const label = createLabel(
                   `${manholeModel.name} ${distance.toFixed(0)}m`
                 );
-                labels.push(label); // Store the label
-                scene.add(label); // Add the label to the scene
+                labels.push(label);
+                scene.add(label);
 
                 // Attach label to the box
                 boxData.label = label;
 
-                // Add boxMesh to the scene (adjust according to your AR library usage)
-                arjs.add(boxMesh, manholeModel.long, manholeModel.lat);
+                // Add boxMesh to the scene
+                scene.add(boxMesh);
               });
             })
             .catch((error) => {
@@ -149,19 +146,17 @@ const ARScene = ({ log }) => {
 
     // Set up the scene, camera, renderer, and AR components
     const canvas = canvasRef.current;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(
       50,
       window.innerWidth / window.innerHeight,
       0.1,
       10000
     );
-    const renderer = new THREE.WebGLRenderer({ canvas });
-    const arjs = new THREEx.LocationBased(scene, camera);
-    const cam = new THREEx.WebcamRenderer(renderer);
-    const deviceOrientationControls = new THREEx.DeviceOrientationControls(
-      camera
-    );
+    renderer = new THREE.WebGLRenderer({ canvas });
+    arjs = new THREEx.LocationBased(scene, camera);
+    cam = new THREEx.WebcamRenderer(renderer);
+    deviceOrientationControls = new THREEx.DeviceOrientationControls(camera);
 
     arjs.startGps();
 
@@ -185,7 +180,7 @@ const ARScene = ({ log }) => {
     // Start the render loop
     render();
 
-    // Legg til etter render-funksjonen i useEffect
+    // Add event listener for canvas click
     canvas.addEventListener("click", onCanvasClick, false);
 
     function onCanvasClick(event) {
@@ -197,14 +192,11 @@ const ARScene = ({ log }) => {
 
       const intersects = raycaster.intersectObjects(scene.children);
 
-      // Iterer over alle treff for å finne "manhole"-objekter, ikke bare det første
+      // Iterate over all intersections to find "manhole" objects
       for (let i = 0; i < intersects.length; i++) {
         const intersectedObject = intersects[i].object;
-        // Sjekk om det treffede objektet er en sylinder (manhole) basert på en unik egenskap
         if (intersectedObject.isManhole) {
-          // Logikk for å vise informasjonsboks for hvert "manhole"-objekt som er truffet
           alert(`Informasjon om manhole: ${intersectedObject.manholeData}`);
-          //break; // Fjern break hvis du vil tillate interaksjon med flere manholes samtidig
         }
       }
     }

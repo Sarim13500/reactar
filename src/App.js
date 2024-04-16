@@ -17,7 +17,6 @@ function App() {
 
   const navigateTo = (page) => {
     setCurrentPage(page);
-    setIsFilterOpen(false);
   };
 
   const toggleFilter = () => {
@@ -40,12 +39,7 @@ function App() {
   return (
     <div className="app">
       <HamburgerMenu navigateTo={navigateTo} />
-      <button onClick={toggleFilter} className="filter-button">
-        {isFilterOpen ? "Lukk Filter" : "Åpne Filter"}
-      </button>{" "}
-      {/* Ny knapp for å vise/skjule filteret */}
-      {isFilterOpen && <Filtrering />}{" "}
-      {/* Render Filtrering komponenten basert på tilstanden */}
+      <Filtrering toggleFilter={toggleFilter} />
       {renderPage()}
       <div className="log-messages">
         {logs.map((log, index) => (

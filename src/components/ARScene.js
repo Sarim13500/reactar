@@ -6,10 +6,10 @@ import { ManholeModel } from "../Manhole";
 
 const ARScene = ({ log }) => {
   const canvasRef = useRef(null);
-  const boxes = []; // Array to store boxes
-  const labels = []; // Array to store labels
-  let lastLat = -1;
-  let lastLong = -1;
+  const boxes = useRef([]); // Ref for array to store boxes
+  const labels = useRef([]); // Ref for array to store labels
+  let lastLat = useRef(-1);
+  let lastLong = useRef(-1);
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
   let scene; // Declare scene variable outside useEffect to make it accessible
@@ -27,10 +27,10 @@ const ARScene = ({ log }) => {
         console.log("Longitude:", longitude);
 
         // Remove existing boxes and labels from the scene
-        boxes.forEach((box) => scene.remove(box.mesh));
-        labels.forEach((label) => scene.remove(label));
-        boxes.length = 0; // Clear the boxes array
-        labels.length = 0; // Clear the labels array
+        boxes.current.forEach((box) => scene.remove(box.mesh));
+        labels.current.forEach((label) => scene.remove(label));
+        boxes.current = []; // Clear the boxes array
+        labels.current = []; // Clear the labels array
 
         axios
           .get(
@@ -83,13 +83,13 @@ const ARScene = ({ log }) => {
                 lat: manholeModel.lat,
                 long: manholeModel.long,
               };
-              boxes.push(boxData);
+              boxes.current.push(boxData);
 
               // Create and store text label
               const label = createLabel(
                 `${manholeModel.name} ${distance.toFixed(0)}m`
               );
-              labels.push(label);
+              labels.current.push(label);
               scene.add(label);
 
               // Attach label to the box
@@ -104,6 +104,9 @@ const ARScene = ({ log }) => {
           });
       });
     };
+
+    // Call handleLocationUpdate immediately when the component mounts
+    handleLocationUpdate();
 
     // Start watching for location updates every 5 seconds
     const intervalId = setInterval(handleLocationUpdate, 5000);

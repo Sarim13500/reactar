@@ -12,9 +12,10 @@ const ARScene = ({ log }) => {
   let lastLong = -1;
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
+  let scene; // Declare scene variable outside useEffect to make it accessible
 
   useEffect(() => {
-    let scene, camera, renderer, arjs, cam, deviceOrientationControls;
+    let camera, renderer, arjs, cam, deviceOrientationControls;
 
     // Function to handle location updates
     const handleLocationUpdate = () => {
@@ -25,119 +26,82 @@ const ARScene = ({ log }) => {
         console.log("Latitude:", latitude);
         console.log("Longitude:", longitude);
 
-        // Remove boxes outside the 30-meter boundary
-        boxes.forEach((box) => {
-          const distance = calculateDistance(
-            latitude,
-            longitude,
-            box.lat,
-            box.long
-          );
-          if (distance > 30) {
-            box.mesh.visible = false; // Hide the box if it's outside the boundary
-            if (box.label) {
-              box.label.visible = false; // Hide the label if it exists
-            }
-          } else {
-            box.mesh.visible = true; // Show the box if it's within the boundary
-            if (box.label) {
-              box.label.visible = true; // Show the label if it exists
-              // Adjust label position above the box
-              box.label.position.set(
-                box.lat,
-                box.mesh.position.y + 1, // Adjust this offset as needed
-                box.long
-              );
-            }
-          }
-        });
+        // Remove existing boxes and labels from the scene
+        boxes.forEach((box) => scene.remove(box.mesh));
+        labels.forEach((label) => scene.remove(label));
+        boxes.length = 0; // Clear the boxes array
+        labels.length = 0; // Clear the labels array
 
-        // Fetch new data from the API and add objects to the scene
-        if (
-          Math.abs(latitude - lastLat) > 0.0001 ||
-          Math.abs(longitude - lastLong) > 0.0001
-        ) {
-          lastLat = latitude;
-          lastLong = longitude;
+        axios
+          .get(
+            `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
+          )
+          .then((response) => {
+            const manholeModels = response.data.map(
+              (manhole) =>
+                new ManholeModel({
+                  id: manhole.id,
+                  featureTypeId: manhole.featureTypeId,
+                  name: manhole.name,
+                  subSection: manhole.subSection,
+                  county: manhole.county,
+                  srid: manhole.srid,
+                  wkt: manhole.wkt,
+                  lat: manhole.lat,
+                  long: manhole.long,
+                  type: manhole.type,
+                  sistModifisert: manhole.sistModifisert,
+                })
+            );
 
-          // Clear old labels before adding new ones
-          labels.forEach((label) => scene.remove(label));
-          labels.length = 0;
+            localStorage.setItem("manholeData", JSON.stringify(manholeModels));
 
-          axios
-            .get(
-              `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
-            )
-            .then((response) => {
-              const manholeModels = response.data.map(
-                (manhole) =>
-                  new ManholeModel({
-                    id: manhole.id,
-                    featureTypeId: manhole.featureTypeId,
-                    name: manhole.name,
-                    subSection: manhole.subSection,
-                    county: manhole.county,
-                    srid: manhole.srid,
-                    wkt: manhole.wkt,
-                    lat: manhole.lat,
-                    long: manhole.long,
-                    type: manhole.type,
-                    sistModifisert: manhole.sistModifisert,
-                  })
+            manholeModels.forEach((manholeModel) => {
+              const distance = calculateDistance(
+                latitude,
+                longitude,
+                manholeModel.lat,
+                manholeModel.long
               );
 
-              localStorage.setItem(
-                "manholeData",
-                JSON.stringify(manholeModels)
-              );
-
-              manholeModels.forEach((manholeModel) => {
-                const distance = calculateDistance(
-                  latitude,
-                  longitude,
-                  manholeModel.lat,
-                  manholeModel.long
-                );
-
-                const geom = new THREE.CylinderGeometry(1, 1, 0.5, 8);
-                const mtl = new THREE.MeshBasicMaterial({
-                  color: 0x55a1e8,
-                  opacity: 0.8,
-                  transparent: true,
-                });
-                const boxMesh = new THREE.Mesh(geom, mtl);
-
-                boxMesh.isManhole = true;
-                boxMesh.manholeData = `Kumlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}, Bruksmateriale: ${manholeModel.bruksmateriale}`;
-
-                // Adjust the position of the box based on the manhole's longitude and latitude
-                boxMesh.position.set(manholeModel.lat, -1, manholeModel.long);
-
-                const boxData = {
-                  mesh: boxMesh,
-                  lat: manholeModel.lat,
-                  long: manholeModel.long,
-                };
-                boxes.push(boxData);
-
-                // Create and store text label
-                const label = createLabel(
-                  `${manholeModel.name} ${distance.toFixed(0)}m`
-                );
-                labels.push(label);
-                scene.add(label);
-
-                // Attach label to the box
-                boxData.label = label;
-
-                // Add boxMesh to the scene
-                scene.add(boxMesh);
+              const geom = new THREE.CylinderGeometry(1, 1, 0.5, 8);
+              const mtl = new THREE.MeshBasicMaterial({
+                color: 0x55a1e8,
+                opacity: 0.8,
+                transparent: true,
               });
-            })
-            .catch((error) => {
-              console.error("Error fetching data:", error);
+              const boxMesh = new THREE.Mesh(geom, mtl);
+
+              boxMesh.isManhole = true;
+              boxMesh.manholeData = `Kumlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}, Bruksmateriale: ${manholeModel.bruksmateriale}`;
+
+              // Adjust the position of the box based on the manhole's longitude and latitude
+              boxMesh.position.set(manholeModel.lat, -1, manholeModel.long);
+
+              const boxData = {
+                mesh: boxMesh,
+                lat: manholeModel.lat,
+                long: manholeModel.long,
+              };
+              boxes.push(boxData);
+
+              // Create and store text label
+              const label = createLabel(
+                `${manholeModel.name} ${distance.toFixed(0)}m`
+              );
+              labels.push(label);
+              scene.add(label);
+
+              // Attach label to the box
+              boxData.label = label;
+
+              // Add boxMesh to the scene
+              scene.add(boxMesh);
             });
-        }
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
       });
     };
 

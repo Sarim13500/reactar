@@ -5,11 +5,11 @@ import "./App.scss";
 import LagredeKumlokk from "./components/LagredeKumlokk";
 import Innstillinger from "./components/Innstillinger";
 import Filtrering from "./components/Filtrering";
-import { FaFilter } from "react-icons/fa";
 
 function App() {
   const [logs, setLogs] = useState([]);
   const [currentPage, setCurrentPage] = useState("arScene");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const log = (message) => {
     setLogs((prevLogs) => [...prevLogs, message]);
@@ -17,6 +17,11 @@ function App() {
 
   const navigateTo = (page) => {
     setCurrentPage(page);
+    setIsFilterOpen(false);
+  };
+
+  const toggleFilter = () => {
+    setIsFilterOpen(!isFilterOpen); // Skifter tilstanden til filtermenyen
   };
 
   const renderPage = () => {
@@ -35,10 +40,13 @@ function App() {
   return (
     <div className="app">
       <HamburgerMenu navigateTo={navigateTo} />
+      <button onClick={toggleFilter} className="filter-button">
+        {isFilterOpen ? "Lukk Filter" : "Åpne Filter"}
+      </button>{" "}
+      {/* Ny knapp for å vise/skjule filteret */}
+      {isFilterOpen && <Filtrering />}{" "}
+      {/* Render Filtrering komponenten basert på tilstanden */}
       {renderPage()}
-      <div className="filter-icon" onClick={() => navigateTo("filtrering")}>
-        <FaFilter /> // Filterikonet
-      </div>
       <div className="log-messages">
         {logs.map((log, index) => (
           <div key={index}>{log}</div>

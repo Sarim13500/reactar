@@ -1,12 +1,13 @@
 .filtrering-container {
   .filter-icon {
     position: fixed;
-    bottom: 30px;
-    left: 20px;
+    bottom: 50px;
+    left: 25px;
     width: 110px;
     height: 110px;
+    opacity: 80%;
     background-color: #ffffff;
-    border-radius: 50%;
+    border-radius: 10%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,11 +33,12 @@
   select {
     width: 100%;
     padding: 10px;
-    margin-bottom: 20px;
+    margin-top: 30px;
+    margin-bottom: 50px;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f9f9f9;
-    font-size: 16px;
+    font-size: 35px;
     outline: none;
     transition: border-color 0.3s ease;
   }
@@ -48,16 +50,15 @@
 
   /* Styling for the apply filter button */
   button {
-    padding: 10px 20px;
+    padding: 15px 25px;
     background-color: #3498db;
     color: #ffffff;
     border: none;
-    border-radius: 5px;
+    border-radius: 100px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 30px;
     transition: background-color 0.3s ease;
   }
-
   button:hover {
     background-color: #2980b9; /* Change background color on hover */
   }

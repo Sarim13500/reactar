@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiFilter } from "react-icons/fi"; // Import the Filter icon from React Icons
+import { FiFilter, HiAdjustments } from "react-icons/hi"; // Import the Filter icon from React Icons
 import "./Filtrering.scss"; // Import the styling for Filtrering component
 import Modal from "./Modal"; // Import the modal component for filtering options
 
@@ -37,7 +37,7 @@ const Filtrering = ({ manholeData, setFilteredData }) => {
   return (
     <div className="filtrering-container">
       <div className="filter-icon" onClick={handleIconClick}>
-        <FiFilter size="75" /> {/* Use the Filter icon */}
+        <HiAdjustments size="75" /> {/* Use the Filter icon */}
       </div>
       {/* Render the modal if showModal state is true */}
       {showModal && (
@@ -59,7 +59,9 @@ const Filtrering = ({ manholeData, setFilteredData }) => {
             </option>
             {/* Add more options as needed */}
           </select>
-          <button onClick={handleFiltering}>Apply Filters</button>
+          <button onClick={handleFiltering} className="button apply-button">
+            Apply Filters
+          </button>
         </Modal>
       )}
     </div>

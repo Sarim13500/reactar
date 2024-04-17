@@ -22,18 +22,24 @@ const HamburgerMenu = ({ navigateTo }) => {
 
   const menuClass = isOpen ? "menu-items show" : "menu-items";
 
+  const handleNavigate = (route) => {
+    navigateTo(route);
+    setIsOpen(false); // Close the menu when an item is clicked
+  };
+
   return (
     <div className="hamburger-menu" ref={menuRef}>
-      <button onClick={toggleMenu}>{isOpen ? "X" : "☰"}</button>
+      <button onClick={toggleMenu} className="menu-button">
+        {isOpen ? "X" : "☰"}
+      </button>
       <div className={menuClass}>
-        <button onClick={() => navigateTo("arScene")}>Hjem</button>
-        <button onClick={() => navigateTo("lagredeKumlokk")}>
+        <button onClick={() => handleNavigate("arScene")}>Hjem</button>
+        <button onClick={() => handleNavigate("lagredeKumlokk")}>
           Lagrede Kumlokk
         </button>
-        <button onClick={() => navigateTo("innstillinger")}>
+        <button onClick={() => handleNavigate("innstillinger")}>
           Innstillinger
         </button>
-        <button onClick={() => navigateTo("filtrering")}>Filtrering</button>
       </div>
     </div>
   );

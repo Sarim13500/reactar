@@ -1,0 +1,84 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+// Target the button within the Filtrering component
+.filtrering-container .modal-content button {
+  font-size: 30px; // Increase font size for bigger text
+  padding: 12px 24px; // Increase padding to make the button larger
+  margin-top: 50px; // Add some top margin to push it lower or provide spacing
+  background-color: #3498db; // Set a background color
+  color: #ffffff; // Set text color to white for better contrast
+  border: none; // Remove any borders if present
+  border-radius: 5px; // Rounded corners for the button
+  cursor: pointer; // Pointer on hover to indicate it's clickable
+  transition: background-color 0.2s, transform 0.2s; // Smooth transition for hover effects
+}
+
+// Enhance hover effect for the button
+.filtrering-container .modal-content button:hover {
+  background-color: #2979b7; // Darken the background on hover
+  transform: scale(1.05); // Slightly increase the size on hover
+}
+// Target the select element within the Filtrering component
+.filtrering-container .modal-content select {
+  font-size: 36px; // Increase the font size for better readability
+  padding: 10px 15px; // Increase padding to make the dropdown larger
+  margin-top: 10px; // Add margin-top for better spacing from other elements
+  background-color: #f9f9f9; // Set a light background color
+  color: #333; // Set text color to dark for contrast
+  border: 1px solid #ccc; // Define a subtle border
+  border-radius: 5px; // Rounded corners for aesthetics
+  width: 100%; // Make the select box take the full container width
+  box-sizing: border-box; // Include padding and border in the element's width
+  cursor: pointer; // Pointer on hover to indicate it's clickable
+}
+
+// Enhance the focus state for accessibility
+.filtrering-container .modal-content select:focus {
+  border-color: #3498db; // Highlight border when focused
+  outline: none; // Remove default outline and replace with border color
+}
+
+.modal-content {
+  background-color: #f9f9f9;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease forwards;
+  width: 50%; /* Increased width */
+  height: 20%; /* Increased height if needed */
+  border: 2px solid #3498db; /* Border color */
+  max-width: 90%; /* Adjust max-width as well */
+}
+
+/* Add a subtle gradient background for the modal header */
+.modal-header {
+  background: linear-gradient(
+    to right,
+    #3498db,
+    #5dade2
+  ); /* Gradient from blue to light blue */
+  color: #fff; /* Text color for contrast */
+  padding: 15px; /* Add padding to the header */
+  border-top-left-radius: 10px; /* Match the modal border radius */
+  border-top-right-radius: 10px; /* Match the modal border radius */
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

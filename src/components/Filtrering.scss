@@ -1,40 +1,64 @@
-.filter-menu {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-
+.filtrering-container {
   .filter-icon {
-    background: transparent;
-    border: none;
+    position: fixed;
+    bottom: 30px;
+    left: 20px;
+    width: 110px;
+    height: 110px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-size: 60px;
+    z-index: 100; /* Ensure the icon is above other elements */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
   }
 
-  .filter-items {
-    display: none;
-    position: absolute;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+  .feather {
+    color: #000000; /* Change color as needed */
+  }
+
+  /* Styling for the modal */
+  .modal-content {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    max-width: 80%;
+  }
+
+  /* Styling for the select dropdown */
+  select {
+    width: 100%;
     padding: 10px;
-    width: 200px;
-
-    button {
-      background: none;
-      border: none;
-      display: block;
-      width: 100%;
-      padding: 10px;
-      text-align: left;
-
-      &:hover {
-        background-color: #f0f0f0;
-      }
-    }
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease;
   }
 
-  .show {
-    display: block; // Shows the filter options when menu is open
+  select:hover,
+  select:focus {
+    border-color: #3498db; /* Change border color on hover/focus */
+  }
+
+  /* Styling for the apply filter button */
+  button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #2980b9; /* Change background color on hover */
   }
 }

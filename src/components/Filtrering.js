@@ -28,6 +28,7 @@ const Filtrering = ({ manholeData, setFilteredData }) => {
       // Otherwise, check if the manhole type matches the selected type
       return manhole.type === filterOptions.type;
     });
+    console.log("Filtered Data:", filteredData); // Debug output
     // Update the filtered data using setFilteredData
     setFilteredData(filteredData);
     // Close the modal

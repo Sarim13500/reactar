@@ -1,7 +1,7 @@
 .hamburger-menu {
   position: fixed; // Fixed relative to the viewport
-  top: 0;
-  right: 0;
+  top: 20px;
+  right: 10px;
   z-index: 1000; // Above other content
 
   // The menu stretches the full height of the viewport
@@ -12,10 +12,11 @@
   align-items: flex-end; // Aligns items to the right
 
   button {
-    background-color: transparent;
+    background-color: #eeeeee;
+    opacity: 80%;
     border: none;
     cursor: pointer;
-    font-size: 100px; // Larger icon size for better visibility
+    font-size: 84px; // Larger icon size for better visibility
     color: black; // Color of the icon
     padding: 20px; // Larger padding for an easier touch target
     z-index: 1001; // Ensure the button is above the menu items

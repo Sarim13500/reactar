@@ -24,6 +24,7 @@ const ARScene = ({ log }) => {
         console.log("Longitude:", longitude);
 
         // Remove boxes outside the 30-meter boundary
+        /*
         boxes.forEach((box) => {
           const distance = calculateDistance(
             latitude,
@@ -49,6 +50,7 @@ const ARScene = ({ log }) => {
             }
           }
         });
+        */
 
         // Fetch new data from the API and add objects to the scene
         if (

@@ -1,30 +1,57 @@
 import React from "react";
-import { FaUser, FaCog, FaBell } from "react-icons/fa";
-import "./Innstillinger.scss"; // Import the styling for Innstillinger component
+import {
+  FaUserCircle,
+  FaLink,
+  FaPalette,
+  FaComments,
+  FaShieldAlt,
+  FaDatabase,
+  FaBell,
+  FaQuestionCircle,
+  FaPaperPlane,
+} from "react-icons/fa";
+import "./Innstillinger.scss";
 
 const Innstillinger = () => {
   return (
     <div className="innstillinger-container">
       <h2>Settings</h2>
       <div className="setting">
-        <div className="setting-icon">
-          <FaUser />
-        </div>
-        <div className="setting-name">Profile</div>
+        <FaUserCircle />
+        <span>Account</span>
       </div>
       <div className="setting">
-        <div className="setting-icon">
-          <FaCog />
-        </div>
-        <div className="setting-name">General</div>
+        <FaLink />
+        <span>Linked Devices</span>
       </div>
       <div className="setting">
-        <div className="setting-icon">
-          <FaBell />
-        </div>
-        <div className="setting-name">Notifications</div>
+        <FaPalette />
+        <span>Appearance</span>
       </div>
-      {/* Add more settings as needed */}
+      <div className="setting">
+        <FaComments />
+        <span>Chats</span>
+      </div>
+      <div className="setting">
+        <FaShieldAlt />
+        <span>Privacy</span>
+      </div>
+      <div className="setting">
+        <FaDatabase />
+        <span>Data and Storage</span>
+      </div>
+      <div className="setting">
+        <FaBell />
+        <span>Notifications</span>
+      </div>
+      <div className="setting">
+        <FaQuestionCircle />
+        <span>Help</span>
+      </div>
+      <div className="setting">
+        <FaPaperPlane />
+        <span>Invite Your Friends</span>
+      </div>
     </div>
   );
 };

@@ -9,9 +9,9 @@ import Filtrering from "./components/Filtrering";
 function App() {
   const [logs, setLogs] = useState([]);
   const [currentPage, setCurrentPage] = useState("arScene");
+
   // Define manholeData and setManholeData here
   const [manholeData, setManholeData] = useState([]); // Assuming it's an array
-  const [filteredManholeData, setFilteredManholeData] = useState([]); // Filtered dataset
 
   const log = (message) => {
     setLogs((prevLogs) => [...prevLogs, message]);
@@ -30,11 +30,11 @@ function App() {
       default:
         return (
           <>
-            <ARScene log={log} setManholeData={filteredManholeData} />
+            <ARScene log={log} setManholeData={setManholeData} />
             {/* Pass manholeData and setManholeData to Filtrering */}
             <Filtrering
               manholeData={manholeData}
-              setFilteredData={setFilteredManholeData}
+              setFilteredData={setManholeData}
             />
           </>
         );

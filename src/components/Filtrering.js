@@ -1,69 +1,55 @@
 import React, { useState } from "react";
-import { FiFilter, HiAdjustments } from "react-icons/hi"; // Import the Filter icon from React Icons
-import "./Filtrering.scss"; // Import the styling for Filtrering component
-import Modal from "./Modal"; // Import the modal component for filtering options
+import { HiAdjustments } from "react-icons/hi";
+import "./Filtrering.scss"; // Ensure this includes all necessary styles from Modal.scss
 
 const Filtrering = ({ manholeData, setFilteredData }) => {
-  const [showModal, setShowModal] = useState(false); // State to manage whether to show the modal
-  const [filterOptions, setFilterOptions] = useState({
-    type: "", // Initialize type filter as empty string to show all by default
-  });
+  const [showModal, setShowModal] = useState(false);
+  const [filterOptions, setFilterOptions] = useState({ type: "" });
 
   const handleIconClick = () => {
-    setShowModal(true); // Display the modal upon clicking the icon
+    setShowModal(true);
   };
 
-  const handleModalClose = () => {
-    setShowModal(false); // Close the modal
+  const handleModalClose = (e) => {
+    if (e) e.stopPropagation(); // Prevents the modal from closing when clicking inside the modal
+    setShowModal(false);
   };
 
-  // Function to handle filtering logic
   const handleFiltering = () => {
-    // Filter the manholeData based on filterOptions
-    const filteredData = manholeData.filter((manhole) => {
-      // If filterOptions.type is empty, return true for all types
-      if (filterOptions.type === "") {
-        return true;
-      }
-      // Otherwise, check if the manhole type matches the selected type
-      return manhole.type === filterOptions.type;
-    });
-    console.log("Filtered Data:", filteredData); // Debug output
-    // Update the filtered data using setFilteredData
+    const filteredData = manholeData.filter(
+      (manhole) =>
+        filterOptions.type === "" || manhole.type === filterOptions.type
+    );
     setFilteredData(filteredData);
-    // Close the modal
     setShowModal(false);
   };
 
   return (
     <div className="filtrering-container">
       <div className="filter-icon" onClick={handleIconClick}>
-        <HiAdjustments size="75" /> {/* Use the Filter icon */}
+        <HiAdjustments size="75" />
       </div>
-      {/* Render the modal if showModal state is true */}
       {showModal && (
-        <Modal onClose={handleModalClose}>
-          {/* Filtering options in the modal */}
-          <h2>Filtrerings Valg</h2>
-          <select
-            value={filterOptions.type}
-            onChange={(e) =>
-              setFilterOptions({ ...filterOptions, type: e.target.value })
-            }
-          >
-            <option value="">All Kumlokk</option>
-            <option value="hjelpesluk">Hjelpesluk</option>
-            <option value="firekantkum">Firekantkum</option>
-            <option value="Standard kum">Standard Kum</option>
-            <option value="Standard kum m sandfang">
-              Standard Kum m Sandfang
-            </option>
-            {/* Add more options as needed */}
-          </select>
-          <button onClick={handleFiltering} className="button apply-button">
-            Apply Filters
-          </button>
-        </Modal>
+        <div className="modal-overlay" onClick={handleModalClose}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Filtrerings Valg</h2>
+            <select
+              value={filterOptions.type}
+              onChange={(e) =>
+                setFilterOptions({ ...filterOptions, type: e.target.value })
+              }
+            >
+              <option value="">All Kumlokk</option>
+              <option value="hjelpesluk">Hjelpesluk</option>
+              <option value="firekantkum">Firekantkum</option>
+              <option value="Standard kum">Standard Kum</option>
+              <option value="Standard kum m sandfang">
+                Standard Kum m Sandfang
+              </option>
+            </select>
+            <button onClick={handleFiltering}>Apply Filters</button>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -11,8 +11,18 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 100; /* Ensure the icon is above other elements */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    z-index: 1001; /* Ensure the icon is above the modal */
+    &:hover {
+      background-color: #f2f2f2; /* Change hover state color if needed */
+    }
+    &.hidden {
+      display: none; /* Hide icon when modal is open */
+    }
+  }
+
+  .filter-icon.hidden {
+    display: none;
   }
 
   .feather {
@@ -28,8 +38,37 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    align-items: center;
+    align-items: flex-end; /* Aligns modal at the bottom */
     justify-content: center;
+    z-index: 1000; /* Below the filter icon */
+  }
+
+  .modal {
+    width: 100%; /* Take the full width of the screen */
+    background-color: #ffffff;
+    border: 2px solid #ffffff; /* White border as requested */
+    padding: 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2); /* Box-shadow for modal */
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+    z-index: 1001; /* Above the overlay */
+    &.show {
+      transform: translateY(0);
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: flex-end;
+    .modal-close {
+      cursor: pointer;
+      font-size: 36px; /* Adjust close icon size as needed */
+      &:hover {
+        color: #3498db; /* Change hover color if needed */
+      }
+    }
   }
 
   /* Styling for the modal */
@@ -38,7 +77,8 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    max-width: 80%;
+    width: 80%;
+    margin-top: 1150px;
     z-index: 101; /* Ensure the modal content is above the overlay */
   }
 
@@ -50,7 +90,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f9f9f9;
-    font-size: 16px;
+    font-size: 36px;
     outline: none;
     transition: border-color 0.3s ease;
   }
@@ -64,12 +104,14 @@
   button {
     padding: 10px 20px;
     background-color: #3498db;
+    margin-top: 25px;
     color: #ffffff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 36px;
     transition: background-color 0.3s ease;
+    margin-bottom: 40px;
   }
 
   button:hover {

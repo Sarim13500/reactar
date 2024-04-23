@@ -9,7 +9,7 @@ html {
   background-color: #f7f7f7;
   margin: 0;
   padding: 0;
-  font-size: 28px;
+  font-size: 38px;
   overflow-x: hidden; // Prevent horizontal scrolling
 }
 
@@ -57,19 +57,5 @@ p {
         color: #6c757d; // Dempet farge for punkttegnet
       }
     }
-  }
-}
-
-// Responsive adjustments
-@media (max-width: 600px) {
-  .card {
-    // Adjust the height for smaller screens to fit 3 or 4 cards
-    height: calc(
-      (100vh - 20px) / 3 - 10px
-    ); // Adjust '/3' to '/4' for four cards, etc.
-  }
-
-  .container {
-    height: calc(100vh - 20px); // Adjust height for smaller screens
   }
 }

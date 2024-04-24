@@ -9,53 +9,126 @@ html {
   background-color: #f7f7f7;
   margin: 0;
   padding: 0;
-  font-size: 38px;
-  overflow-x: hidden; // Prevent horizontal scrolling
+  font-size: 16px;
+  overflow-x: hidden;
 }
 
-// Container for the cards with a fixed viewport height and scroll
 .container {
-  padding: 10px;
-  margin: 20px auto; // Provide some top and bottom space
-  overflow-y: scroll; // Allow vertical scrolling
-  height: calc(100vh - 40px); // Subtract the top and bottom margin
-  -webkit-overflow-scrolling: touch; // Smooth scrolling on touch devices
+  padding: 0px;
+  margin: 0px auto;
+  overflow-y: scroll;
+  height: calc(100vh - 40px);
+  -webkit-overflow-scrolling: touch;
+}
+
+.tittel {
+  background-color: black;
+  padding: 80px;
+  margin: 0;
+  margin-top: -10px;
 }
 h2 {
-  color: #333; // Mørkere farge for bedre lesbarhet
+  font-size: 4.2em;
+  font-weight: 400;
+  margin-bottom: 1em;
+  color: white;
   text-align: center;
 }
+
 p {
-  font-size: 1.5em; // Adjusted for better proportionality
-  color: #555; // Softer color for better readability
-  text-align: left; // Center the text
+  font-size: 2.5em;
+  color: #555;
+  text-align: center;
 }
 
 .card {
-  background: white; // Lysere grå istedenfor hvit for å redusere belastning på øynene
-  border-radius: 10px; // Moderne avrundede hjørner
-  border-bottom: 2px solid black;
-  border-top: 2px solid black;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Subtil skygge for dybdefølelse
+  border: 3px solid black;
+  margin: 10px 10px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s;
 
   &:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); // Mørkere skygge ved hover
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   }
 
-  .card-content {
-    padding: 20px; // Litt mer plass inne i kortet
-    h3 {
-      color: black; // Bruk en farge for å fremheve ID-en på kumlokket
+  &.expanded {
+    .card-content {
+      display: block;
     }
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  padding: 85px 25px;
+
+  .kum {
+    width: 225px;
+    height: 225px;
+    border-radius: 50%;
+    background-color: #c8a165;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 35px;
+  }
+
+  .icons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 10px;
+
+    .icon {
+      font-size: 70px; // Adjust size as needed
+      color: #5d534a;
+      margin-bottom: 30px; // Adjust spacing as needed
+    }
+  }
+
+  .manhole-summary {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 20px; // Space after icons
 
     div {
-      margin-bottom: 5px; // Litt mer avstand mellom linjene
-      padding-left: 50px;
-      font-size: 36px;
-      &::before {
-        content: "• "; // Tilføy et punkttegn før hver linje for å definere nøkkelpunkter
-        color: #6c757d; // Dempet farge for punkttegnet
-      }
+      font-size: 2.2em;
+      color: #333;
+      margin-bottom: 1.15em;
     }
+  }
+
+  .drop-down-icon {
+    transition: transform 0.3s;
+    margin-left: 0px;
+    margin-bottom: -375px;
+    font-size: 34px;
+    color: #5d534a;
+  }
+}
+
+.card-content {
+  display: none;
+  padding: 25px;
+  background-color: #f7f7f7;
+  border-top: 1px solid #e1e1e1;
+
+  div {
+    margin-bottom: 30px;
+    font-size: 2.2em;
+    color: #333;
+  }
+}
+
+.card.expanded {
+  .drop-down-icon {
+    transform: rotate(180deg);
   }
 }

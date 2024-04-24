@@ -12,13 +12,13 @@
   align-items: flex-end; // Aligns items to the right
 
   button {
-    background-color: #eeeeee;
-    opacity: 80%;
+    background-color: #ffffff;
+    opacity: 90%;
     border: none;
     cursor: pointer;
     font-size: 84px; // Larger icon size for better visibility
     color: black; // Color of the icon
-    padding: 20px; // Larger padding for an easier touch target
+    padding: 0 20px; // Larger padding for an easier touch target
     z-index: 1001; // Ensure the button is above the menu items
 
     &:focus {

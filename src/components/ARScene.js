@@ -4,7 +4,7 @@ import * as THREE from "three";
 import * as THREEx from "@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js";
 import { ManholeModel } from "../Manhole";
 
-const ARScene = ({ log }) => {
+const ARScene = ({ log, manholeData }) => {
   const canvasRef = useRef(null);
   const boxes = []; // Array to store boxes
   const labels = []; // Array to store labels
@@ -24,6 +24,7 @@ const ARScene = ({ log }) => {
         console.log("Longitude:", longitude);
 
         // Remove boxes outside the 30-meter boundary
+
         boxes.forEach((box) => {
           const distance = calculateDistance(
             latitude,
@@ -101,9 +102,9 @@ const ARScene = ({ log }) => {
                 );
 
                 console.log(manholeModel);
-                const geom = new THREE.BoxGeometry(1, 1, 1, 1);
+                const geom = new THREE.CylinderGeometry(1, 1, 0.5, 8);
                 const mtl = new THREE.MeshBasicMaterial({
-                  color: 0xffff00,
+                  color: 0x55a1e8,
                   opacity: 0.8,
                   transparent: true,
                 });
@@ -213,7 +214,7 @@ const ARScene = ({ log }) => {
     return () => {
       clearInterval(intervalId); // Clear interval when component unmounts
     };
-  }, []);
+  }, [manholeData]);
 
   // Function to calculate distance between two coordinates
   const calculateDistance = (lat1, lon1, lat2, lon2) => {

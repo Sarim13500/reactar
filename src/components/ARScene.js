@@ -53,8 +53,6 @@ const ARScene = () => {
       //deserializing to json
       const responseInJsonFormat = await manholeApiResponse.json(); //unpacks the response object into its json-object form so we can work with the data.
 
-      localStorage.setItem("manholeData", JSON.stringify(manholeModels));
-
       //pushing to manholeModels object/array
       responseInJsonFormat.forEach((model) => {
         // const box = new THREE.Mesh(geom, mtl);
@@ -79,6 +77,7 @@ const ARScene = () => {
         const box = new THREE.Mesh(geom, mtl);
         arjs.add(box, model.long, model.lat);
       });
+      localStorage.setItem("manholeData", JSON.stringify(manholeModels));
     });
 
     arjs.startGps();

@@ -3,54 +3,40 @@ import {
   FaUserCircle,
   FaLink,
   FaPalette,
-  FaComments,
   FaShieldAlt,
   FaDatabase,
-  FaBell,
   FaQuestionCircle,
-  FaPaperPlane,
 } from "react-icons/fa";
 import "./Innstillinger.scss";
 
 const Innstillinger = () => {
   return (
     <div className="innstillinger-container">
-      <h2>Settings</h2>
+      <h2>Innstillinger</h2>
       <div className="setting">
         <FaUserCircle />
-        <span>Account</span>
+        <span>Konto</span>
       </div>
       <div className="setting">
         <FaLink />
-        <span>Linked Devices</span>
+        <span>Koblet enheter</span>
       </div>
       <div className="setting">
         <FaPalette />
-        <span>Appearance</span>
+        <span>Utsende</span>
       </div>
-      <div className="setting">
-        <FaComments />
-        <span>Chats</span>
-      </div>
+      |
       <div className="setting">
         <FaShieldAlt />
-        <span>Privacy</span>
+        <span>Personvern</span>
       </div>
       <div className="setting">
         <FaDatabase />
-        <span>Data and Storage</span>
-      </div>
-      <div className="setting">
-        <FaBell />
-        <span>Notifications</span>
+        <span>Data og lagring</span>
       </div>
       <div className="setting">
         <FaQuestionCircle />
-        <span>Help</span>
-      </div>
-      <div className="setting">
-        <FaPaperPlane />
-        <span>Invite Your Friends</span>
+        <span>Hjelp</span>
       </div>
     </div>
   );

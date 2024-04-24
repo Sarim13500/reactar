@@ -1,20 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-<<<<<<< HEAD
-<<<<<<< HEAD:src/components/HamburgerMenu.js
 import "./HamburgerMenu.scss";
-=======
-import "./HamburgerMenu.scss"; // Ensure your SCSS file path is correct
->>>>>>> ab64da2 (Denne funker med hamburgermeny, men u kan ikke navigere videre):src/HamburgerMenu.js
 
-<<<<<<< HEAD:src/components/HamburgerMenu.js
-=======
-// Oppdater denne linjen for å inkludere navigateTo prop
->>>>>>> 66cdccc (Fikset slik at vi kan gp inn i kumlokk og se mock data):src/HamburgerMenu.js
-=======
-import "./HamburgerMenu.scss"; // Ensure your SCSS file path is correct
-
-// Oppdater denne linjen for å inkludere navigateTo prop
->>>>>>> 4fe0a77 (Chass med lagrede kummer ekte)
 const HamburgerMenu = ({ navigateTo }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef();
@@ -31,24 +17,8 @@ const HamburgerMenu = ({ navigateTo }) => {
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
-<<<<<<< HEAD
-<<<<<<< HEAD:src/components/HamburgerMenu.js
-<<<<<<< HEAD:src/components/HamburgerMenu.js
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-=======
-
-=======
->>>>>>> 66cdccc (Fikset slik at vi kan gp inn i kumlokk og se mock data):src/HamburgerMenu.js
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-<<<<<<< HEAD:src/components/HamburgerMenu.js
-  }, []); // Empty array ensures this only runs on mount and unmount
->>>>>>> ab64da2 (Denne funker med hamburgermeny, men u kan ikke navigere videre):src/HamburgerMenu.js
-=======
-  }, []);
->>>>>>> 66cdccc (Fikset slik at vi kan gp inn i kumlokk og se mock data):src/HamburgerMenu.js
 
   const menuClass = isOpen ? "menu-items show" : "menu-items";
 
@@ -59,8 +29,6 @@ const HamburgerMenu = ({ navigateTo }) => {
 
   return (
     <div className="hamburger-menu" ref={menuRef}>
-<<<<<<< HEAD:src/components/HamburgerMenu.js
-<<<<<<< HEAD:src/components/HamburgerMenu.js
       <button onClick={toggleMenu} className="menu-button">
         {isOpen ? "X" : "☰"}
       </button>
@@ -72,43 +40,6 @@ const HamburgerMenu = ({ navigateTo }) => {
         <button onClick={() => handleNavigate("innstillinger")}>
           Innstillinger
         </button>
-=======
-      <button onClick={toggleMenu}>
-        {isOpen ? "X" : "☰"} {/* Conditional rendering for icon */}
-      </button>
-      <div className={menuClass}>
-        {/* Menu items */}
-        <a href="#">Lagrede Kumlokk</a>
-        <a href="#">Innstillinger</a>
-        <a href="#">Filtrering</a>
-        {/* Add more links or buttons as needed */}
->>>>>>> ab64da2 (Denne funker med hamburgermeny, men u kan ikke navigere videre):src/HamburgerMenu.js
-=======
-=======
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const menuClass = isOpen ? "menu-items show" : "menu-items";
-
-  return (
-    <div className="hamburger-menu" ref={menuRef}>
->>>>>>> 4fe0a77 (Chass med lagrede kummer ekte)
-      <button onClick={toggleMenu}>{isOpen ? "X" : "☰"}</button>
-      <div className={menuClass}>
-        {/* Endre onClick handleren her for å bruke navigateTo */}
-        <a href="#">Hjem</a>
-        <a href="#" onClick={() => navigateTo("kumlokk")}>
-          Lagrede Kumlokk
-        </a>
-        <a href="#" onClick={() => navigateTo("innstillinger")}>
-          Innstillinger
-        </a>
-<<<<<<< HEAD
->>>>>>> 66cdccc (Fikset slik at vi kan gp inn i kumlokk og se mock data):src/HamburgerMenu.js
-=======
->>>>>>> 4fe0a77 (Chass med lagrede kummer ekte)
       </div>
     </div>
   );

@@ -24,10 +24,6 @@ const ARScene = ({ log, manholeData }) => {
         console.log("Longitude:", longitude);
 
         // Remove boxes outside the 30-meter boundary
-<<<<<<< HEAD
-
-=======
->>>>>>> edbdd15 (riktig ARScene)
         boxes.forEach((box) => {
           const distance = calculateDistance(
             latitude,
@@ -84,10 +80,6 @@ const ARScene = ({ log, manholeData }) => {
                     lat: manhole.lat,
                     long: manhole.long,
                     type: manhole.type,
-<<<<<<< HEAD
-                    sistModifisert: manhole.sistModifisert,
-=======
->>>>>>> edbdd15 (riktig ARScene)
                   })
               );
 
@@ -108,15 +100,9 @@ const ARScene = ({ log, manholeData }) => {
                 );
 
                 console.log(manholeModel);
-<<<<<<< HEAD
-                const geom = new THREE.TorusGeometry(10, 3, 16, 100);
-                const mtl = new THREE.MeshBasicMaterial({
-                  color: 0xffff00,
-=======
                 const geom = new THREE.CylinderGeometry(1, 1, 0.5, 8);
                 const mtl = new THREE.MeshBasicMaterial({
                   color: 0x55a1e8,
->>>>>>> edbdd15 (riktig ARScene)
                   opacity: 0.8,
                   transparent: true,
                 });
@@ -126,15 +112,11 @@ const ARScene = ({ log, manholeData }) => {
                 boxMesh.manholeData = `Kumlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}, Bruksmateriale: ${manholeModel.bruksmateriale}`; // Legg til data for bruk ved klikk
 
                 // Adjust the position of the box based on the manhole's longitude and latitude
-<<<<<<< HEAD
-                boxMesh.position.set(manholeModel.long, -1, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
-=======
                 boxMesh.position.set(
                   manholeModel.long,
                   -1,
                   manholeModel.lat
                 ); // Note: You might need to adjust this depending on your coordinate system
->>>>>>> edbdd15 (riktig ARScene)
 
                 // Prepare data for rendering
                 const boxData = {
@@ -163,9 +145,7 @@ const ARScene = ({ log, manholeData }) => {
             });
         }
       });
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+
 
       // Fetch new data from the API and add objects to the scene
       if (
@@ -254,9 +234,7 @@ const ARScene = ({ log, manholeData }) => {
             console.error("Error fetching data:", error);
           });
       }
->>>>>>> 4fe0a77 (Chass med lagrede kummer ekte)
-=======
->>>>>>> edbdd15 (riktig ARScene)
+
     };
 
     // Start watching for location updates every 5 seconds

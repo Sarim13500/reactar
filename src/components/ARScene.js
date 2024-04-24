@@ -24,6 +24,7 @@ const ARScene = ({ log, manholeData }) => {
         console.log("Longitude:", longitude);
 
         // Remove boxes outside the 30-meter boundary
+
         boxes.forEach((box) => {
           const distance = calculateDistance(
             latitude,
@@ -80,6 +81,7 @@ const ARScene = ({ log, manholeData }) => {
                     lat: manhole.lat,
                     long: manhole.long,
                     type: manhole.type,
+                    sistModifisert: manhole.sistModifisert,
                   })
               );
 
@@ -100,9 +102,9 @@ const ARScene = ({ log, manholeData }) => {
                 );
 
                 console.log(manholeModel);
-                const geom = new THREE.CylinderGeometry(1, 1, 0.5, 8);
+                const geom = new THREE.TorusGeometry(10, 3, 16, 100);
                 const mtl = new THREE.MeshBasicMaterial({
-                  color: 0x55a1e8,
+                  color: 0xffff00,
                   opacity: 0.8,
                   transparent: true,
                 });
@@ -112,11 +114,7 @@ const ARScene = ({ log, manholeData }) => {
                 boxMesh.manholeData = `Kumlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}, Bruksmateriale: ${manholeModel.bruksmateriale}`; // Legg til data for bruk ved klikk
 
                 // Adjust the position of the box based on the manhole's longitude and latitude
-                boxMesh.position.set(
-                  manholeModel.long,
-                  -1,
-                  manholeModel.lat
-                ); // Note: You might need to adjust this depending on your coordinate system
+                boxMesh.position.set(manholeModel.long, -1, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
 
                 // Prepare data for rendering
                 const boxData = {
@@ -145,96 +143,6 @@ const ARScene = ({ log, manholeData }) => {
             });
         }
       });
-
-
-      // Fetch new data from the API and add objects to the scene
-      if (
-        Math.abs(latitude - lastLat) > 0.0001 ||
-        Math.abs(longitude - lastLong) > 0.0001
-      ) {
-        lastLat = latitude;
-        lastLong = longitude;
-
-        // Fjerne gamle etiketter før du legger til nye
-        labels.forEach((label) => scene.remove(label));
-        labels.length = 0; // Tøm labels-arrayet for å forberede for nye etiketter
-
-        axios
-          .get(
-            `https://augmented-api.azurewebsites.net/manholes/latlong?latitude=${latitude}&longitude=${longitude}`
-          )
-          .then((response) => {
-            const manholeModels = response.data.map(
-              (manhole) =>
-                new ManholeModel({
-                  id: manhole.id,
-                  featureTypeId: manhole.featureTypeId,
-                  name: manhole.name,
-                  subSection: manhole.subSection,
-                  county: manhole.county,
-                  srid: manhole.srid,
-                  wkt: manhole.wkt,
-                  lat: manhole.lat,
-                  long: manhole.long,
-                  type: manhole.type,
-                })
-            );
-
-            localStorage.setItem("manholeData", JSON.stringify(manholeModels));
-
-            // Now you can use manholeModels, which is an array of ManholeModel instances
-            //console.log(manholeModels);
-
-            manholeModels.forEach((manholeModel) => {
-              const distance = calculateDistance(
-                latitude,
-                longitude,
-                manholeModel.lat,
-                manholeModel.long
-              );
-
-              console.log(manholeModel);
-              const geom = new THREE.CylinderGeometry(1, 1, 0.5, 8);
-              const mtl = new THREE.MeshBasicMaterial({
-                color: 0x55a1e8,
-                opacity: 0.8,
-                transparent: true,
-              });
-              const boxMesh = new THREE.Mesh(geom, mtl);
-
-              boxMesh.isManhole = true; // Marker mesh som en manhole for identifikasjon ved klikk
-              boxMesh.manholeData = `Kumlokk ID: ${manholeModel.id}, Navn: ${manholeModel.name}, Bruksmateriale: ${manholeModel.bruksmateriale}`; // Legg til data for bruk ved klikk
-
-              // Adjust the position of the box based on the manhole's longitude and latitude
-              boxMesh.position.set(manholeModel.long, -1, manholeModel.lat); // Note: You might need to adjust this depending on your coordinate system
-
-              // Prepare data for rendering
-              const boxData = {
-                mesh: boxMesh,
-                lat: manholeModel.lat,
-                long: manholeModel.long,
-              };
-              boxes.push(boxData);
-
-              // Create and store text label
-              const label = createLabel(
-                `${manholeModel.name} ${distance.toFixed(0)}m`
-              );
-              labels.push(label); // Store the label
-              scene.add(label); // Add the label to the scene
-
-              // Attach label to the box
-              boxData.label = label;
-
-              // Add boxMesh to the scene (adjust according to your AR library usage)
-              arjs.add(boxMesh, manholeModel.long, manholeModel.lat);
-            });
-          })
-          .catch((error) => {
-            console.error("Error fetching data:", error);
-          });
-      }
-
     };
 
     // Start watching for location updates every 5 seconds

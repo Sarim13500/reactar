@@ -11,7 +11,7 @@ const Filtrering = ({ manholeData, setFilteredData }) => {
   };
 
   const handleModalClose = (e) => {
-    if (e) e.stopPropagation(); // Prevents the modal from closing when clicking inside the modal
+    if (e) e.stopPropagation(); // Prevents the modal from closing when clicking inside the modal jaja
     setShowModal(false);
   };
 

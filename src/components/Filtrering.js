@@ -16,10 +16,12 @@ const Filtrering = ({ manholeData, setFilteredData }) => {
   };
 
   const handleFiltering = () => {
+    console.log("Current filter type:", filterOptions.type); // Check the selected filter type
     const filteredData = manholeData.filter(
       (manhole) =>
         filterOptions.type === "" || manhole.type === filterOptions.type
     );
+    console.log("Filtered data:", filteredData); // See what data has been filtered
     setFilteredData(filteredData);
     setShowModal(false);
   };
@@ -50,8 +52,8 @@ const Filtrering = ({ manholeData, setFilteredData }) => {
                 }
               >
                 <option value="">All Kumlokk</option>
-                <option value="hjelpesluk">Hjelpesluk</option>
-                <option value="firekantkum">Firekantkum</option>
+                <option value="Hjelpesluk">Hjelpesluk</option>
+                <option value="Firekantkum">Firekantkum</option>
                 <option value="Standard kum">Standard Kum</option>
                 <option value="Standard kum m sandfang">
                   Standard Kum m Sandfang

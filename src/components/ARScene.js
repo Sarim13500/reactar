@@ -29,7 +29,7 @@ const ARScene = () => {
 
     const cam = new THREEx.WebcamRenderer(renderer);
 
-    const geom = new THREE.TorusGeometry(10, 3, 16, 100);
+    const geom = new THREE.BoxGeometry(1, 1, 1);
     const mtl = new THREE.MeshBasicMaterial({
       color: 0xffff00,
       opacity: 0.8,

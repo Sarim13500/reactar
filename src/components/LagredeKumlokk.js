@@ -25,7 +25,7 @@ const LagredeKumlokk = () => {
         <h2>Lagrede Kumlokk</h2>
       </div>
       <div className="filter">
-        <label htmlFor="typeFilter">Filtrer på Type:</label>
+        <label htmlFor="typeFilter">Filtrer på type:</label>
         <select
           id="typeFilter"
           value={selectedType}

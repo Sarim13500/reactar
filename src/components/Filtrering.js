@@ -40,7 +40,7 @@ const Filtrering = ({ manholeData, setFilteredData }) => {
         className={`filter-icon ${showModal ? "hidden" : ""}`}
         onClick={handleIconClick}
       >
-        <HiAdjustments size="75" />
+        <HiAdjustments size="75" color="white" />
       </div>
       {showModal && (
         <div className="modal-overlay" onClick={handleModalClose}>

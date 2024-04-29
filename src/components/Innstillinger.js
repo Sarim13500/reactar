@@ -18,10 +18,6 @@ const Innstillinger = () => {
         <span>Konto</span>
       </div>
       <div className="setting">
-        <FaLink />
-        <span>Koblet enheter</span>
-      </div>
-      <div className="setting">
         <FaPalette />
         <span>Utsende</span>
       </div>

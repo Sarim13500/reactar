@@ -1,27 +1,35 @@
 import React, { useState } from "react";
-import { HiAdjustments, HiX } from "react-icons/hi"; // Importing HiX for the close icon
-import "./Filtrering.scss"; // Ensure this includes all necessary styles from Modal.scss
+import { HiAdjustments, HiX } from "react-icons/hi";
+import "./Filtrering.scss";
 
 const Filtrering = ({ manholeData, setFilteredData }) => {
   const [showModal, setShowModal] = useState(false);
-  const [filterOptions, setFilterOptions] = useState({ type: "" });
+  const [filterOptions, setFilterOptions] = useState({ type: [] });
 
   const handleIconClick = () => {
     setShowModal(true);
   };
 
   const handleModalClose = (e) => {
-    if (e) e.stopPropagation(); // Prevents the modal from closing when clicking inside the modal jaja
+    if (e) e.stopPropagation();
     setShowModal(false);
   };
 
+  const handleCheckboxChange = (type) => {
+    setFilterOptions((prevOptions) => {
+      const newTypes = prevOptions.type.includes(type)
+        ? prevOptions.type.filter((t) => t !== type)
+        : [...prevOptions.type, type];
+      return { ...prevOptions, type: newTypes };
+    });
+  };
+
   const handleFiltering = () => {
-    console.log("Current filter type:", filterOptions.type); // Check the selected filter type
     const filteredData = manholeData.filter(
       (manhole) =>
-        filterOptions.type === "" || manhole.type === filterOptions.type
+        filterOptions.type.length === 0 ||
+        filterOptions.type.includes(manhole.type)
     );
-    console.log("Filtered data:", filteredData); // See what data has been filtered
     setFilteredData(filteredData);
     setShowModal(false);
   };
@@ -45,20 +53,42 @@ const Filtrering = ({ manholeData, setFilteredData }) => {
             </div>
             <div className="modal-body">
               <h2>Filtrerings Valg</h2>
-              <select
-                value={filterOptions.type}
-                onChange={(e) =>
-                  setFilterOptions({ ...filterOptions, type: e.target.value })
-                }
-              >
-                <option value="">All Kumlokk</option>
-                <option value="Hjelpesluk">Hjelpesluk</option>
-                <option value="Firekantkum">Firekantkum</option>
-                <option value="Standard kum">Standard Kum</option>
-                <option value="Standard kum m sandfang">
-                  Standard Kum m Sandfang
-                </option>
-              </select>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={filterOptions.type.includes("Hjelpesluk")}
+                  onChange={() => handleCheckboxChange("Hjelpesluk")}
+                />{" "}
+                Hjelpesluk
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={filterOptions.type.includes("Firekantkum")}
+                  onChange={() => handleCheckboxChange("Firekantkum")}
+                />{" "}
+                Firekantkum
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={filterOptions.type.includes("Standard kum")}
+                  onChange={() => handleCheckboxChange("Standard kum")}
+                />{" "}
+                Standard Kum
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={filterOptions.type.includes(
+                    "Standard kum m sandfang"
+                  )}
+                  onChange={() =>
+                    handleCheckboxChange("Standard kum m sandfang")
+                  }
+                />{" "}
+                Standard Kum m Sandfang
+              </label>
               <button onClick={handleFiltering}>Apply Filters</button>
             </div>
           </div>

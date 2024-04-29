@@ -31,6 +31,7 @@ function App() {
       default:
         return (
           <>
+          <TrionaLogo/>
             <ARScene log={log} setManholeData={setManholeData} />
             {/* Pass manholeData and setManholeData to Filtrering */}
             <Filtrering
@@ -44,7 +45,6 @@ function App() {
 
   return (
     <div className="app">
-      <TrionaLogo/>
       <HamburgerMenu navigateTo={navigateTo} />
       {renderPage()}
       <div className="log-messages">

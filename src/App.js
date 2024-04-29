@@ -6,6 +6,7 @@ import LagredeKumlokk from "./components/LagredeKumlokk";
 import Innstillinger from "./components/Innstillinger";
 import Filtrering from "./components/Filtrering";
 import TrionaLogo from "./components/TrionaLogo";
+import BottomNavigation from "./components/bottomnavigation";
 
 function App() {
   const [logs, setLogs] = useState([]);
@@ -31,7 +32,7 @@ function App() {
       default:
         return (
           <>
-          <TrionaLogo/>
+            <TrionaLogo />
             <ARScene log={log} setManholeData={setManholeData} />
             {/* Pass manholeData and setManholeData to Filtrering */}
             <Filtrering
@@ -45,13 +46,8 @@ function App() {
 
   return (
     <div className="app">
-      <HamburgerMenu navigateTo={navigateTo} />
       {renderPage()}
-      <div className="log-messages">
-        {logs.map((log, index) => (
-          <div key={index}>{log}</div>
-        ))}
-      </div>
+      <BottomNavigation navigateTo={navigateTo} />
     </div>
   );
 }

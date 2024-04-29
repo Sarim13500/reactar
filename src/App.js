@@ -5,6 +5,7 @@ import "./App.scss";
 import LagredeKumlokk from "./components/LagredeKumlokk";
 import Innstillinger from "./components/Innstillinger";
 import Filtrering from "./components/Filtrering";
+import TrionaLogo from "./components/TrionaLogo";
 
 function App() {
   const [logs, setLogs] = useState([]);
@@ -43,6 +44,7 @@ function App() {
 
   return (
     <div className="app">
+      <TrionaLogo/>
       <HamburgerMenu navigateTo={navigateTo} />
       {renderPage()}
       <div className="log-messages">

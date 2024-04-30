@@ -17,7 +17,7 @@ p{
 }
 
 .container {
-  padding: 20px;
+  padding: 0px;
   margin: 0 auto;
   overflow-y: auto;
   height: calc(100vh - 40px);
@@ -149,7 +149,7 @@ h2 {
 
 .card {
   border: 3px solid black;
-  margin: 10px 30px;
+  margin: 30px 30px;
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -171,7 +171,7 @@ h2 {
   align-items: center;
   cursor: pointer;
   position:relative;
-  padding: 85px 25px;
+  padding: 65px 25px;
 
   .kum {
     width: 225px;
@@ -193,7 +193,7 @@ h2 {
     .icon {
       font-size: 70px;
       color: #5d534a;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
     }
   }
 
@@ -203,6 +203,7 @@ h2 {
     flex-direction: column;
     justify-content: center;
     padding-left: 20px;
+    padding-bottom: 320px;
 
     div {
       font-size: 2.2em;
@@ -213,7 +214,7 @@ h2 {
 
   .drop-down-icon {
     transition: transform 0.3s;
-    margin-left: 0px;
+    margin-left: 375px;
     margin-bottom: -375px;
     font-size: 34px;
     color: #5d534a;

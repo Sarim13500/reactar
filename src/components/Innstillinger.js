@@ -21,7 +21,10 @@ const Innstillinger = () => {
         <FaPalette />
         <span>Utsende</span>
       </div>
-      |
+      <div className="setting">
+        <FaPalette />
+        <span>Brukerveiledning</span>
+      </div>
       <div className="setting">
         <FaShieldAlt />
         <span>Personvern</span>

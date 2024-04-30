@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { IoIosArrowForward } from "react-icons/io";
 import { HiAdjustments, HiX } from "react-icons/hi";
 import "./Filtrering.scss";
 
@@ -49,7 +50,7 @@ const Filtrering = ({ manholeData, setFilteredData }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
-              <HiX className="modal-close" onClick={handleModalClose} />
+              <IoIosArrowForward className="modal-close" onClick={handleModalClose} />
             </div>
             <div className="modal-body">
               <h2>Filtrerings Valg</h2>

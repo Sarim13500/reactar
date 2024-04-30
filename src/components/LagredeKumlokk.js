@@ -1,22 +1,43 @@
-import React, { useState } from "react";
-import { FaFingerprint, FaMapPin, FaBars, FaChevronDown } from "react-icons/fa";
+import React, { useState, useRef, useEffect } from "react";
+import { FaFingerprint, FaMapPin, FaBars, FaChevronDown, FaTimes } from "react-icons/fa";
 import { GiCircleCage } from "react-icons/gi";
 import "./LagredeKumlokk.scss";
 
 const LagredeKumlokk = () => {
   const [expandedId, setExpandedId] = useState(null);
-  const [selectedType, setSelectedType] = useState("");
+  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  // Hente data fra localStorage
   const storedData = localStorage.getItem("manholeData");
   const manholeData = storedData ? JSON.parse(storedData) : [];
+  const filterOptions = ["Standard kum", "Firkantkum", "Hjelpesluk", "Standard kum m sandfang"];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const toggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  const handleTypeChange = (event) => {
-    setSelectedType(event.target.value);
+  const handleTypeChange = (type) => {
+    setSelectedTypes(selectedTypes.includes(type)
+      ? selectedTypes.filter(t => t !== type)
+      : [...selectedTypes, type]);
+  };
+
+  const clearFilters = () => {
+    setSelectedTypes([]);
   };
 
   return (
@@ -25,36 +46,46 @@ const LagredeKumlokk = () => {
         <h2>Lagrede Kumlokk</h2>
       </div>
       <div className="filter">
-        <label htmlFor="typeFilter">Filtrer på type:</label>
-        <select
-          id="typeFilter"
-          value={selectedType}
-          onChange={handleTypeChange}
-        >
-          <option value="">Alle Typer</option>
-          <option value="Standard kum">Standard kum</option>
-          <option value="Firekantkum">Firekantkum</option>
-          <option value="Hjelpesluk">Hjelpesluk</option>
-          <option value="Standard kum m sandfang">
-            Standard kum m sandfang
-          </option>
-        </select>
+        <div onClick={() => setDropdownOpen(!dropdownOpen)} className="filter-dropdown">
+          Filtrer på type:
+          <FaChevronDown className={`dropdown-icon ${dropdownOpen ? "flipped" : ""}`} />
+        </div>
+        {dropdownOpen && (
+          <div className="dropdown-menu" ref={dropdownRef}>
+            {filterOptions.map(type => (
+              <label key={type}>
+                <input
+                  type="checkbox"
+                  checked={selectedTypes.includes(type)}
+                  onChange={() => handleTypeChange(type)}
+                />
+                {type}
+              </label>
+            ))}
+          </div>
+        )}
       </div>
+      {selectedTypes.length > 0 && (
+        <div className="active-filters">
+          <h4>Active Filters:</h4>
+          {selectedTypes.map(type => (
+            <span className="filter-tag" key={type}>
+              {type} <FaTimes onClick={() => handleTypeChange(type)} />
+            </span>
+          ))}
+          <button onClick={clearFilters}>Clear All</button>
+        </div>
+      )}
       {manholeData.length > 0 ? (
         manholeData
-          .filter((manhole) => !selectedType || manhole.type === selectedType)
-          .map((manhole) => (
+          .filter(manhole => selectedTypes.length === 0 || selectedTypes.includes(manhole.type))
+          .map(manhole => (
             <div
               className={`card ${expandedId === manhole.id ? "expanded" : ""}`}
               key={manhole.id}
             >
-              <div
-                className="card-header"
-                onClick={() => toggleExpand(manhole.id)}
-              >
-                <div>
-                  <GiCircleCage className="kum" />
-                </div>
+              <div className="card-header" onClick={() => toggleExpand(manhole.id)}>
+                <GiCircleCage className="kum" />
                 <div className="icons-container">
                   <FaFingerprint className="icon" />
                   <FaMapPin className="icon" />
@@ -64,13 +95,8 @@ const LagredeKumlokk = () => {
                   <div>Id: {manhole.id}</div>
                   <div>Wkt: {manhole.wkt}</div>
                   <div>Type: {manhole.type}</div>
+                  <FaChevronDown className={`drop-down-icon ${expandedId === manhole.id ? "flipped" : ""}`} />
                 </div>
-
-                <FaChevronDown
-                  className={`drop-down-icon ${
-                    expandedId === manhole.id ? "flipped" : ""
-                  }`}
-                />
               </div>
               {expandedId === manhole.id && (
                 <div className="card-content">

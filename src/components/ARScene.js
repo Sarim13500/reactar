@@ -78,6 +78,15 @@ const ARScene = () => {
         const box = new THREE.Mesh(geom, mtl);
         arjs.add(box, model.long, model.lat);
       });
+
+      fillManholeModelsWithData({
+        manholeModels: withinRadius,
+        labels: [],
+        scene: scene,
+        geom: geom,
+        mtl: mtl,
+      });
+
       localStorage.setItem("manholeData", JSON.stringify(manholeModels));
     });
 
@@ -148,7 +157,8 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return d;
 };
 
-const fillManholeModelsWithData = ({ manholeModels, labels, scene }) => {
+const fillManholeModelsWithData = ({ manholeModels, labels, scene, geom,
+  mtl, }) => {
   let boxes;
 
   const boxMesh = new THREE.Mesh(geom, mtl);

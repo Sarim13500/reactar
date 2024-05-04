@@ -7,7 +7,7 @@ import {
   FaDatabase,
   FaQuestionCircle,FaAddressBook
 } from "react-icons/fa";
-import "./Innstillinger.scss";
+import "../styling/Innstillinger.scss";
 
 const Innstillinger = ({ navigateTo }) => {
   return (

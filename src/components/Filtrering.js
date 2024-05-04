@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { HiAdjustments, HiX } from "react-icons/hi";
-import "./Filtrering.scss";
+import "../styling/Filtrering.scss";
 
 const Filtrering = ({ manholeData, setFilteredData }) => {
   const [showModal, setShowModal] = useState(false);

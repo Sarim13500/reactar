@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaFingerprint, FaMapPin, FaBars, FaChevronDown, FaTimes } from "react-icons/fa";
 import { GiCircleCage } from "react-icons/gi";
-import "./LagredeKumlokk.scss";
+import "../styling/LagredeKumlokk.scss";
 
 const LagredeKumlokk = () => {
   const [expandedId, setExpandedId] = useState(null);

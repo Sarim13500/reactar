@@ -1,6 +1,6 @@
 import React from 'react';
 import logoImage from '../assets/triona.png'
-import './TrionaLogo.scss'; // Add this line to import your CSS
+import '../styling/TrionaLogo.scss'; // Add this line to import your CSS
 
 function TrionaLogo() {
     return (

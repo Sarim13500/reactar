@@ -1,5 +1,5 @@
 import React from "react";
-import "./Brukerveiledning.scss";
+import "../styling/Brukerveiledning.scss";
 import { FaArrowLeft } from "react-icons/fa";
 
 const Brukerveiledning = ({ navigateTo }) => {

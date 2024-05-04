@@ -5,11 +5,11 @@ import {
   FaPalette,
   FaShieldAlt,
   FaDatabase,
-  FaQuestionCircle,
+  FaQuestionCircle,FaAddressBook
 } from "react-icons/fa";
 import "./Innstillinger.scss";
 
-const Innstillinger = () => {
+const Innstillinger = ({ navigateTo }) => {
   return (
     <div className="innstillinger-container">
       <h2>Innstillinger</h2>
@@ -21,7 +21,10 @@ const Innstillinger = () => {
         <FaPalette />
         <span>Utsende</span>
       </div>
-      |
+      <div className="setting" onClick={() => navigateTo("brukerveiledning")}>
+        <FaAddressBook />
+        <span>Brukerveiledning</span>
+      </div>
       <div className="setting">
         <FaShieldAlt />
         <span>Personvern</span>

@@ -67,13 +67,13 @@ const LagredeKumlokk = () => {
       </div>
       {selectedTypes.length > 0 && (
         <div className="active-filters">
-          <h4>Active Filters:</h4>
+          <h4>Aktive Filter:</h4>
           {selectedTypes.map(type => (
             <span className="filter-tag" key={type}>
               {type} <FaTimes onClick={() => handleTypeChange(type)} />
             </span>
           ))}
-          <button onClick={clearFilters}>Clear All</button>
+          <button onClick={clearFilters}>Tøm Filter</button>
         </div>
       )}
       {manholeData.length > 0 ? (

@@ -5,11 +5,9 @@ import { FaArrowLeft } from "react-icons/fa";
 const Brukerveiledning = ({ navigateTo }) => {
   return (
     <div className="brukerveiledning-container">
-
-    <button className="tilbake-knapp" onClick={() => navigateTo("innstillinger")}>
+      <button className="tilbake-knapp" onClick={() => navigateTo("innstillinger")}>
         <FaArrowLeft /> Tilbake
-    </button>
-
+      </button>
 
       <h2>Brukerveiledning</h2>
       
@@ -20,7 +18,7 @@ const Brukerveiledning = ({ navigateTo }) => {
           Bruk bunnnavigasjonen for å navigere mellom de forskjellige
           funksjonene. Bruk filtreringen for å sortere dataene etter dine
           preferanser. Du kan også filtrere de lagrede vei-objektene dine inne 
-          på lagredeKumlokk siden.
+          på <button className="lagredeKumlokk-link" onClick={() => navigateTo("lagredeKumlokk")}>LagredeKumlokk</button> siden.
         </p>
       </div>
       

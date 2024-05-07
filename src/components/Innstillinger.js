@@ -1,7 +1,6 @@
 import React from "react";
 import {
   FaUserCircle,
-  FaLink,
   FaPalette,
   FaShieldAlt,
   FaDatabase,

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaCamera, FaCog, FaArchive } from "react-icons/fa"; // Import Font Awesome icons
 import { FiSettings, FiArchive, FiCamera } from "react-icons/fi"; // Import Feather icons
-import "../styling/bottomnavigation.scss"; // Your own CSS for styling
+import "../styling/Bottomnavigation.scss"; // Your own CSS for styling
 
 const BottomNavigation = ({ navigateTo }) => {
   // State to track which icon is currently active

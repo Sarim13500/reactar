@@ -16,9 +16,10 @@ const Brukerveiledning = ({ navigateTo }) => {
         <p>
           Dette er en kort introduksjon til hvordan du bruker applikasjonen.
           Bruk bunnnavigasjonen for å navigere mellom de forskjellige
-          funksjonene. Bruk filtreringen for å sortere dataene etter dine
+          funksjonene. Bruk filtreringen som befinner seg øverst i høyere hjørne for å filtrere dataene etter dine
           preferanser. Du kan også filtrere de lagrede vei-objektene dine inne 
           på <button className="lagredeKumlokk-link" onClick={() => navigateTo("lagredeKumlokk")}>LagredeKumlokk</button> siden.
+          På innstillingssiden finner du ulike innstillinger og informasjon du kan lese.
         </p>
       </div>
       

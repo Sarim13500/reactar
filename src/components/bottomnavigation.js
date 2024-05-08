@@ -5,7 +5,7 @@ import "../styling/Bottomnavigation.scss"; // Your own CSS for styling
 
 const BottomNavigation = ({ navigateTo }) => {
   // State to track which icon is currently active
-  const [activeIcon, setActiveIcon] = useState("");
+  const [activeIcon, setActiveIcon] = useState("arScene");
 
   // Function to handle icon click and navigation
   const handleIconClick = (iconName) => {

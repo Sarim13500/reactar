@@ -3,7 +3,7 @@ import { FaCamera, FaCog, FaArchive } from "react-icons/fa"; // Import Font Awes
 import { FiSettings, FiArchive, FiCamera } from "react-icons/fi"; // Import Feather icons
 import "../styling/NavigationsBar.scss"; // Your own CSS for styling
 
-const BottomNavigation = ({ navigateTo }) => {
+const NavigationsBar = ({ navigateTo }) => {
   // State to track which icon is currently active
   const [activeIcon, setActiveIcon] = useState("arScene");
 

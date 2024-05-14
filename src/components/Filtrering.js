@@ -90,7 +90,7 @@ const Filtrering = ({ manholeData, setFilteredData }) => {
                 />{" "}
                 Standard Kum m Sandfang
               </label>
-              <button onClick={handleFiltering}>Apply Filters</button>
+              <button onClick={handleFiltering}>Velg Filter</button>
             </div>
           </div>
         </div>

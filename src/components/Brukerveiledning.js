@@ -6,7 +6,7 @@ const Brukerveiledning = ({ navigateTo }) => {
   return (
     <div className="brukerveiledning-container">
       <button className="tilbake-knapp" onClick={() => navigateTo("innstillinger")}>
-        <FaArrowLeft /> Tilbake
+        <FaArrowLeft /> 
       </button>
 
       <h2>Brukerveiledning</h2>

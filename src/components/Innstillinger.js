@@ -18,7 +18,7 @@ const Innstillinger = ({ navigateTo }) => {
       </div>
       <div className="setting">
         <FaPalette />
-        <span>Utsende</span>
+        <span>Utseende</span>
       </div>
       <div className="setting" onClick={() => navigateTo("brukerveiledning")}>
         <FaAddressBook />

@@ -43,7 +43,7 @@ const LagredeKumlokk = () => {
   return (
     <div className="container">
       <div className="tittel">
-        <h2>Lagrede Kumlokk</h2>
+        <h2>Kumlokk i området</h2>
       </div>
       <div className="filter">
         <div onClick={() => setDropdownOpen(!dropdownOpen)} className="filter-dropdown">

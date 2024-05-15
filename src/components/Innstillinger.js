@@ -2,10 +2,9 @@ import React from "react";
 import {
   FaUserCircle,
   FaPalette,
-  FaShieldAlt,
-  FaDatabase,
-  FaQuestionCircle,FaAddressBook
+FaAddressBook
 } from "react-icons/fa";
+import { FaRoadCircleCheck } from "react-icons/fa6";
 import "../styling/Innstillinger.scss";
 
 const Innstillinger = ({ navigateTo }) => {
@@ -17,25 +16,18 @@ const Innstillinger = ({ navigateTo }) => {
         <span>Konto</span>
       </div>
       <div className="setting">
-        <FaPalette />
-        <span>Utseende</span>
+        <FaRoadCircleCheck />
+        <span>Valg av vegobjekter</span>
       </div>
       <div className="setting" onClick={() => navigateTo("brukerveiledning")}>
         <FaAddressBook />
         <span>Brukerveiledning</span>
       </div>
       <div className="setting">
-        <FaShieldAlt />
-        <span>Personvern</span>
+        <FaPalette />
+        <span>Utseende</span>
       </div>
-      <div className="setting">
-        <FaDatabase />
-        <span>Data og lagring</span>
-      </div>
-      <div className="setting">
-        <FaQuestionCircle />
-        <span>Hjelp</span>
-      </div>
+      
     </div>
   );
 };

@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaFingerprint, FaMapPin, FaBars, FaChevronDown, FaTimes } from "react-icons/fa";
+import {
+  FaFingerprint,
+  FaMapPin,
+  FaBars,
+  FaChevronDown,
+  FaTimes,
+} from "react-icons/fa";
 import { GiCircleCage } from "react-icons/gi";
 import "../styling/LagredeKumlokk.scss";
 
@@ -11,7 +17,12 @@ const LagredeKumlokk = () => {
 
   const storedData = localStorage.getItem("manholeData");
   const manholeData = storedData ? JSON.parse(storedData) : [];
-  const filterOptions = ["Standard kum", "Firkantkum", "Hjelpesluk", "Standard kum m sandfang"];
+  const filterOptions = [
+    "Standard kum",
+    "Firkantkum",
+    "Hjelpesluk",
+    "Standard kum m sandfang",
+  ];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -31,9 +42,11 @@ const LagredeKumlokk = () => {
   };
 
   const handleTypeChange = (type) => {
-    setSelectedTypes(selectedTypes.includes(type)
-      ? selectedTypes.filter(t => t !== type)
-      : [...selectedTypes, type]);
+    setSelectedTypes(
+      selectedTypes.includes(type)
+        ? selectedTypes.filter((t) => t !== type)
+        : [...selectedTypes, type]
+    );
   };
 
   const clearFilters = () => {
@@ -43,16 +56,21 @@ const LagredeKumlokk = () => {
   return (
     <div className="container">
       <div className="tittel">
-        <h2>Kumlokk i området</h2>
+        <h2>Kumlokk i nærheten</h2>
       </div>
       <div className="filter">
-        <div onClick={() => setDropdownOpen(!dropdownOpen)} className="filter-dropdown">
+        <div
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          className="filter-dropdown"
+        >
           Filtrer på type:
-          <FaChevronDown className={`dropdown-icon ${dropdownOpen ? "flipped" : ""}`} />
+          <FaChevronDown
+            className={`dropdown-icon ${dropdownOpen ? "flipped" : ""}`}
+          />
         </div>
         {dropdownOpen && (
           <div className="dropdown-menu" ref={dropdownRef}>
-            {filterOptions.map(type => (
+            {filterOptions.map((type) => (
               <label key={type}>
                 <input
                   type="checkbox"
@@ -68,7 +86,7 @@ const LagredeKumlokk = () => {
       {selectedTypes.length > 0 && (
         <div className="active-filters">
           <h4>Aktive Filter:</h4>
-          {selectedTypes.map(type => (
+          {selectedTypes.map((type) => (
             <span className="filter-tag" key={type}>
               {type} <FaTimes onClick={() => handleTypeChange(type)} />
             </span>
@@ -78,13 +96,19 @@ const LagredeKumlokk = () => {
       )}
       {manholeData.length > 0 ? (
         manholeData
-          .filter(manhole => selectedTypes.length === 0 || selectedTypes.includes(manhole.type))
-          .map(manhole => (
+          .filter(
+            (manhole) =>
+              selectedTypes.length === 0 || selectedTypes.includes(manhole.type)
+          )
+          .map((manhole) => (
             <div
               className={`card ${expandedId === manhole.id ? "expanded" : ""}`}
               key={manhole.id}
             >
-              <div className="card-header" onClick={() => toggleExpand(manhole.id)}>
+              <div
+                className="card-header"
+                onClick={() => toggleExpand(manhole.id)}
+              >
                 <GiCircleCage className="kum" />
                 <div className="icons-container">
                   <FaFingerprint className="icon" />
@@ -95,7 +119,11 @@ const LagredeKumlokk = () => {
                   <div>Id: {manhole.id}</div>
                   <div>Wkt: {manhole.wkt}</div>
                   <div>Type: {manhole.type}</div>
-                  <FaChevronDown className={`drop-down-icon ${expandedId === manhole.id ? "flipped" : ""}`} />
+                  <FaChevronDown
+                    className={`drop-down-icon ${
+                      expandedId === manhole.id ? "flipped" : ""
+                    }`}
+                  />
                 </div>
               </div>
               {expandedId === manhole.id && (
